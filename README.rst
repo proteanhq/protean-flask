@@ -14,7 +14,6 @@ Overview
         |
     * - package
       - | |version| |wheel| |supported-versions| |supported-implementations|
-        | |commits-since|
 
 .. |docs| image:: https://readthedocs.org/projects/protean-flask/badge/?style=flat
     :target: https://readthedocs.org/projects/protean-flask
@@ -22,23 +21,19 @@ Overview
 
 .. |version| image:: https://img.shields.io/pypi/v/protean-flask.svg
     :alt: PyPI Package latest release
-    :target: https://pypi.python.org/pypi/protean-flask
-
-.. |commits-since| image:: https://img.shields.io/github/commits-since/proteanhq/protean-flask/v0.0.1.svg
-    :alt: Commits since latest release
-    :target: https://github.com/proteanhq/protean-flask/compare/v0.0.1...master
+    :target: https://pypi.org/project/protean-flask
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/protean-flask.svg
     :alt: PyPI Wheel
-    :target: https://pypi.python.org/pypi/protean-flask
+    :target: https://pypi.org/project/protean-flask
 
 .. |supported-versions| image:: https://img.shields.io/pypi/pyversions/protean-flask.svg
     :alt: Supported versions
-    :target: https://pypi.python.org/pypi/protean-flask
+    :target: https://pypi.org/project/protean-flask
 
 .. |supported-implementations| image:: https://img.shields.io/pypi/implementation/protean-flask.svg
     :alt: Supported implementations
-    :target: https://pypi.python.org/pypi/protean-flask
+    :target: https://pypi.org/project/protean-flask
 
 
 .. end-badges
@@ -61,6 +56,10 @@ https://protean-flask.readthedocs.io/
 
 Development
 ===========
+
+::
+
+    pyenv virtualenv -p python3.6 3.6.5 protean-flask-dev
 
 To run the all tests run::
 
