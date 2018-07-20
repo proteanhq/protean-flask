@@ -1,0 +1,16 @@
+[paths]
+source =
+   src/protean_flask
+   */site-packages/protean_flask
+
+[run]
+branch = true
+source =
+    protean_flask
+    tests
+parallel = true
+
+[report]
+show_missing = true
+precision = 2
+omit = *migrations*
