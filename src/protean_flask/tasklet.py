@@ -2,10 +2,9 @@
 
 import inflect
 import inflection
-
 from flask import jsonify
-from protean.usecase import Tasklet
 from protean.transport import Status
+from protean.usecase import Tasklet
 
 INFLECTOR = inflect.engine()
 

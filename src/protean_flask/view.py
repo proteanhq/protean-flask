@@ -1,15 +1,16 @@
 """This module exposes the Base Resource View for all Application Views"""
 
-import json
 import importlib
-import inflect
+import json
 
-from flask.views import View, MethodViewType
+import inflect
+from flask import jsonify
+from flask import request
 from flask._compat import with_metaclass
-from flask import jsonify, request
+from flask.views import MethodViewType
+from flask.views import View
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended.view_decorators import verify_jwt_in_request
-
 from protean.transport import Status
 
 INFLECTOR = inflect.engine()

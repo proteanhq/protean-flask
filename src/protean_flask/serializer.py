@@ -3,9 +3,8 @@
 from datetime import datetime
 
 import pytz
-
-from flask_marshmallow import Marshmallow
 from flask_jwt_extended import get_jwt_identity
+from flask_marshmallow import Marshmallow
 from marshmallow import fields
 
 MARSHMALLOW = Marshmallow()
