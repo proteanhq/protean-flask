@@ -35,7 +35,6 @@ class APITasklet:
             if no_serialization:
                 return response_object.value['data']
             else:
-                import pdb; pdb.set_trace()
                 result = serializer.dump(response_object.value['data'])
                 return jsonify({INFLECTOR.plural(resource): result.data,
                                 "total": response_object.value['total'],
