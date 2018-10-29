@@ -67,10 +67,8 @@ setup(
         'click==6.7',
         'flask==1.0.2',
         'inflect==0.3.1',
-        'flask-jwt-extended==3.12.0',
         'protean==0.0.4',
         'flask-marshmallow==0.9.0',
-        'pytz==2018.5'
         # eg: 'aspectlib==1.1.1', 'six>=1.7',
     ],
     extras_require={
