@@ -4,7 +4,7 @@ import inflect
 import inflection
 from flask import jsonify
 from protean.core.transport import Status
-from protean.core.usecase import Tasklet
+from protean.core.tasklet import Tasklet
 
 INFLECTOR = inflect.engine()
 
@@ -28,7 +28,7 @@ class APITasklet:
             serializer.context = {'repo_factory': repo_factory}
 
         response_object = Tasklet.perform(repo_factory, cls_entity, cls_usecase,
-                                          cls_request_object, payload, many)
+                                          cls_request_object, payload)
 
         # FIXME Check for Response object value
         if many:
