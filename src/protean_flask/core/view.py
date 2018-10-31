@@ -178,7 +178,7 @@ class ShowAPIResource(GenericAPIResource):
         """
         payload = {'identifier': identifier}
         return self._process_request(
-            self.cls_usecase, self.cls_request_object, payload=payload)
+            self.usecase_class, self.request_object_class, payload=payload)
 
 
 class GenericAPIResourceSet(GenericAPIResource):
