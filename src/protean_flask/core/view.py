@@ -4,14 +4,15 @@ import importlib
 import json
 
 import inflect
+
 from flask import jsonify
 from flask import request
-from flask._compat import with_metaclass
 from flask.views import MethodViewType
 from flask.views import View
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended.view_decorators import verify_jwt_in_request
+
 from protean.transport import Status
+
+from protean_flask.utils import with_metaclass
 
 INFLECTOR = inflect.engine()
 
@@ -260,22 +261,3 @@ class GenericAPIResource(CustomMethodView):
                 Status(response_object.type))
 
 
-class GenericProtectedAPIResource(GenericAPIResource):
-    """This is the base class for authenticated APIs"""
-
-    def authenticated(self):  # pylint: disable=E0213
-        """Decorate MethodView for JWT authentication
-
-        Just wrapping with `authenticated` method of flask_jwt did not work
-        This link exposed the idea of using `_authenticated` (with a underscore at the front)
-        and writing a custom decorator, which is then wrapped over MethodView methods:
-        https://github.com/web-pal/flask-rest-boilerplate/blob/master/init/jwt_init.py
-
-        """
-        def decorator(*args, **kwargs):
-            """Wrap `_authenticated` method of flask_jwt"""
-            verify_jwt_in_request()
-            return self(*args, **kwargs)  # pylint: disable=E1102
-        return decorator
-
-    decorators = [authenticated]

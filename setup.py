@@ -68,7 +68,7 @@ setup(
         'flask==1.0.2',
         'inflect==0.3.1',
         'protean==0.0.4',
-        'flask-marshmallow==0.9.0',
+        'marshmallow==2.16.1',
         # eg: 'aspectlib==1.1.1', 'six>=1.7',
     ],
     extras_require={
