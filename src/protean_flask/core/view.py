@@ -8,10 +8,10 @@ import inflection
 from flask import request, current_app
 from flask.views import MethodView
 
-from protean.usecase import ShowRequestObject, ShowUseCase
+from protean.core.usecase import ShowRequestObject, ShowUseCase
 from protean.core.tasklet import Tasklet
 from protean.core.transport import ResponseFailure
-from protean.core.repository import rf
+from protean.core.repository import repo_factory
 
 from protean_flask.core.renderers import render_json
 
@@ -46,7 +46,7 @@ class APIResource(MethodView):
         response = meth(*args, **kwargs)
         if not isinstance(response, current_app.response_class):
             data, code, headers = self._unpack_response(response)
-            response = self.renderer(data, code, headers)
+            response = APIResource.renderer(data, code, headers)
 
         return response
 
@@ -75,50 +75,50 @@ class GenericAPIResource(APIResource):
     """This is the Generic Base Class for all Views
     """
 
-    entity_class = None
+    schema_cls = None
+    serializer_cls = None
     repo_factory = None
-    serializer_class = None
 
     def get_repository_factory(self):
         """ Returns the repository factory to be used
         Uses the attribute `self.repo_factory` or
         defaults to using `protean.repository.rf`.
         """
-        return self.repo_factory or rf
+        return self.repo_factory or repo_factory
 
-    def get_entity_class(self):
+    def get_schema_cls(self):
         """
         Return the class to use for the serializer.
         Defaults to using `self.entity_class`.
         """
-        assert self.entity_class is not None, (
-            "'%s' should either include a `entity_class` attribute, "
-            "or override the `get_entity_class()` method."
+        assert self.schema_cls is not None, (
+            "'%s' should either include a `schema_cls` attribute, "
+            "or override the `get_schema_cls()` method."
             % self.__class__.__name__
         )
-        return self.entity_class
+        return self.schema_cls
 
     def get_serializer(self, *args, **kwargs):
         """
         Return the serializer instance that should be used for validating and
         de-serializing input, and for serializing output.
         """
-        serializer_class = self.get_serializer_class()
-        serializer = serializer_class(*args, **kwargs)
+        serializer_cls = self.get_serializer_cls()
+        serializer = serializer_cls(*args, **kwargs)
         serializer.context = self.get_serializer_context()
         return serializer
 
-    def get_serializer_class(self):
+    def get_serializer_cls(self):
         """
         Return the class to use for the serializer.
         Defaults to using `self.serializer_class`.
         """
-        assert self.serializer_class is not None, (
-            "'%s' should either include a `serializer_class` attribute, "
-            "or override the `get_serializer_class()` method."
+        assert self.serializer_cls is not None, (
+            "'%s' should either include a `serializer_cls` attribute, "
+            "or override the `get_serializer_cls()` method."
             % self.__class__.__name__
         )
-        return self.serializer_class
+        return self.serializer_cls
 
     def get_serializer_context(self):
         """
@@ -128,12 +128,12 @@ class GenericAPIResource(APIResource):
             'view': self
         }
 
-    def _process_request(self, usecase_class, request_object_class, payload,
+    def _process_request(self, usecase_cls, request_object_cls, payload,
                          many=False, no_serialization=False):
 
         # Get the resource name
-        entity_class = self.get_entity_class()
-        resource = inflection.underscore(entity_class.__name__)
+        schema_cls = self.get_schema_cls()
+        resource = inflection.underscore(schema_cls.opts.entity_cls.__name__)
 
         # Get the serializer for this class
         serializer = None
@@ -141,15 +141,15 @@ class GenericAPIResource(APIResource):
             serializer = self.get_serializer(many=many)
 
         # Get the repository factory to be used
-        repo_factory = self.get_repository_factory()
+        rf = self.get_repository_factory()
 
         # Run the use case and return the results
         response_object = Tasklet.perform(
-            repo_factory, entity_class, usecase_class, request_object_class,
-            payload)
+            rf, schema_cls, usecase_cls, request_object_cls,payload)
 
         if isinstance(response_object, ResponseFailure):
-            return response_object.value, response_object.code.value
+            print(vars(response_object))
+            return response_object.value, response_object.code
 
         elif many:
             items = serializer.dump(response_object.value.items)
@@ -168,8 +168,8 @@ class GenericAPIResource(APIResource):
 class ShowAPIResource(GenericAPIResource):
     """ An API view for retrieving an entity by its identifier"""
 
-    usecase_class = ShowUseCase
-    request_object_class = ShowRequestObject
+    usecase_cls = ShowUseCase
+    request_object_cls = ShowRequestObject
 
     def get(self, identifier):
         """Show the entity.
@@ -178,7 +178,7 @@ class ShowAPIResource(GenericAPIResource):
         """
         payload = {'identifier': identifier}
         return self._process_request(
-            self.usecase_class, self.request_object_class, payload=payload)
+            self.usecase_cls, self.request_object_cls, payload=payload)
 
 
 class GenericAPIResourceSet(GenericAPIResource):
