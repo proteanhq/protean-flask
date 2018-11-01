@@ -68,3 +68,6 @@ class TestShowAPIResource:
         client = app.test_client()
         rv = client.get('/dogs/2')
         assert rv.status_code == 404
+
+        # Delete the dog now
+        repo_factory.DogSchema.delete(1)

@@ -1,6 +1,7 @@
 """This module exposes the Base Resource View for all Application Views"""
 
 import importlib
+import json
 
 import inflect
 import inflection
@@ -8,7 +9,11 @@ import inflection
 from flask import request, current_app
 from flask.views import MethodView
 
-from protean.core.usecase import ShowRequestObject, ShowUseCase
+from protean.core.usecase import (ShowRequestObject, ShowUseCase,
+                                  ListRequestObject, ListUseCase,
+                                  CreateRequestObject, CreateUseCase,
+                                  UpdateRequestObject, UpdateUseCase,
+                                  DeleteRequestObject, DeleteUseCase)
 from protean.core.tasklet import Tasklet
 from protean.core.transport import ResponseFailure
 from protean.core.repository import repo_factory
@@ -181,100 +186,61 @@ class ShowAPIResource(GenericAPIResource):
             self.usecase_cls, self.request_object_cls, payload=payload)
 
 
-class GenericAPIResourceSet(GenericAPIResource):
-    """This is the Generic Base Class for all Views
+class ListAPIResource(GenericAPIResource):
+    """ An API view for listing entities"""
 
-       It also serves as a template where a resource requires no customisations,
-       and wants to offer just CRUD operations
-    """
-    serializer_class = None
-    repo_factory = None
+    usecase_cls = ListUseCase
+    request_object_cls = ListRequestObject
 
-    def __init__(self, module, resource, repository_factory):
-        """Initialize Generic API and register routes"""
+    def get(self):
+        """List the entities.
+        """
+        return self._process_request(
+            self.usecase_cls, self.request_object_cls, payload=request.args)
 
-        # The module where classes related to this resource
-        # can be found. For example, if `synonym` resource was defined
-        # in 'src/taxonomy/views.py', then the module should be 'taxonomy'.
-        # It is the folder in which all other files (views.py, entities.py,
-        # serializers.py, usecases.py etc) will be found.
-        self.module = module
 
-        # 'resource' is used to derive other associated classes. For example,
-        # if resource is 'synonym', then the serializer class will be
-        # `SynonymSerializer`, the List UseCase class will be `ListSynonymUseCase`,
-        # the entity will be `Synonym` and so on.
-        self.resource = resource
+class CreateAPIResource(GenericAPIResource):
+    """ An API view for creating an entity"""
 
-        # 'repository_factory` provides access to defined repositories
-        self.repository_factory = repository_factory
+    usecase_cls = CreateUseCase
+    request_object_cls = CreateRequestObject
 
-        # Pluralize the resource string
-        self.url = '/{}/'.format(INFLECTOR.plural(self.resource))
+    def post(self):
+        """Create the entity.
+        """
+        payload = json.loads(request.data)
+        return self._process_request(
+            self.usecase_cls, self.request_object_cls, payload=payload)
 
-        # Method Aliases to take advantage of MethodView type routing
-        self.post = self.create
-        self.put = self.update
 
-    def _derive_module(self, resource_type):
-        """Derive views module from module base"""
-        module = None
-        if resource_type == 'view':
-            module = importlib.import_module('{}.views'.format(self.module))
-        elif resource_type == 'serializer':
-            module = importlib.import_module('{}.serializers'.format(self.module))
-        elif resource_type == 'usecase' or resource_type == 'request_object':
-            module = importlib.import_module('{}.usecases'.format(self.module))
-        elif resource_type == 'entity':
-            module = importlib.import_module('{}.entities'.format(self.module))
-        return module
+class UpdateAPIResource(GenericAPIResource):
+    """ An API view for updating an entity"""
 
-    def _get_class(self, resource_type, class_name):
-        """Get class from module and class name strings"""
-        module = self._derive_module(resource_type)
-        class_ = getattr(module, class_name)
-        return class_
+    usecase_cls = UpdateUseCase
+    request_object_cls = UpdateRequestObject
 
-    def _get_class_instance(self, resource_type, class_name, *args, **kwargs):
-        """Construct and return an instance from module and class name strings"""
-        class_ = self._get_class(resource_type, class_name)
-        return class_(*args, **kwargs)
+    def put(self, identifier):
+        """Update the entity.
+         Expected Parameters:
+             identifier = <string>, identifies the entity
+        """
+        payload = json.loads(request.data)
+        payload.update({'identifier': identifier})
+        return self._process_request(
+            self.usecase_cls, self.request_object_cls, payload=payload)
 
-    def _derive_entity_cls(self):
-        """Derive the connected Entity class"""
-        return self.resource.title()
 
-    def _derive_resource_cls(self):
-        """Derive the connected Entity class"""
-        return '{}Resource'.format(self.resource.title())
+class DeleteAPIResource(GenericAPIResource):
+    """ An API view for deleting an entity"""
 
-    def _derive_serializer_cls(self, many=False):
-        """Derive the appropriate serializer class from type of response"""
-        if many:
-            class_ = '{}BriefSerializer'.format(self.resource.title())
-        else:
-            class_ = '{}Serializer'.format(self.resource.title())
+    usecase_cls = DeleteUseCase
+    request_object_cls = DeleteRequestObject
 
-        return class_
-
-    def _derive_usecase_cls(self, method):
-        """Derive the appropriate UseCase class from type of response"""
-
-        return {
-            'index': 'List{}UseCase'.format(INFLECTOR.plural(self.resource.title())),
-            'show': 'Show{}UseCase'.format(self.resource.title()),
-            'create': 'Create{}UseCase'.format(self.resource.title()),
-            'update': 'Update{}UseCase'.format(self.resource.title()),
-            'delete': 'Delete{}UseCase'.format(self.resource.title())
-        }.get(method, None)
-
-    def _derive_request_object_cls(self, method):
-        """Derive the appropriate UseCase class from type of response"""
-
-        return {
-            'index': 'List{}RequestObject'.format(INFLECTOR.plural(self.resource.title())),
-            'show': 'Show{}RequestObject'.format(self.resource.title()),
-            'create': 'Create{}RequestObject'.format(self.resource.title()),
-            'update': 'Update{}RequestObject'.format(self.resource.title()),
-            'delete': 'Delete{}RequestObject'.format(self.resource.title())
-        }.get(method, None)
+    def put(self, identifier):
+        """Delete the entity.
+         Expected Parameters:
+             identifier = <string>, identifies the entity
+        """
+        payload = {'identifier': identifier}
+        return self._process_request(
+            self.usecase_cls, self.request_object_cls, payload=payload)
