@@ -9,4 +9,3 @@ def render_json(data, code, headers):
     resp.headers.extend(headers or {})
 
     return resp
-

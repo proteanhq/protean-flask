@@ -35,10 +35,6 @@ class GenericAPIResourceSet(GenericAPIResource):
         # Pluralize the resource string
         self.url = '/{}/'.format(INFLECTOR.plural(self.resource))
 
-        # Method Aliases to take advantage of MethodView type routing
-        self.post = self.create
-        self.put = self.update
-
     def _derive_module(self, resource_type):
         """Derive views module from module base"""
         module = None

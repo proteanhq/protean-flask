@@ -6,5 +6,6 @@ from .schemas import DogSchema
 
 
 class ShowDogResource(ShowAPIResource):
+    """ View for retrieving a Dog by its ID"""
     schema_cls = DogSchema
     serializer_cls = DogSerializer

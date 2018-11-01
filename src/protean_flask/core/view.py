@@ -96,11 +96,12 @@ class GenericAPIResource(APIResource):
         Return the class to use for the serializer.
         Defaults to using `self.entity_class`.
         """
-        assert self.schema_cls is not None, (
-            "'%s' should either include a `schema_cls` attribute, "
-            "or override the `get_schema_cls()` method."
-            % self.__class__.__name__
-        )
+        if not self.schema_cls:
+            raise AssertionError(
+                "'%s' should either include a `schema_cls` attribute, "
+                "or override the `get_schema_cls()` method."
+                % self.__class__.__name__
+            )
         return self.schema_cls
 
     def get_serializer(self, *args, **kwargs):
@@ -118,11 +119,12 @@ class GenericAPIResource(APIResource):
         Return the class to use for the serializer.
         Defaults to using `self.serializer_class`.
         """
-        assert self.serializer_cls is not None, (
-            "'%s' should either include a `serializer_cls` attribute, "
-            "or override the `get_serializer_cls()` method."
-            % self.__class__.__name__
-        )
+        if not self.serializer_cls:
+            raise AssertionError(
+                "'%s' should either include a `serializer_cls` attribute, "
+                "or override the `get_serializer_cls()` method."
+                % self.__class__.__name__
+            )
         return self.serializer_cls
 
     def get_serializer_context(self):
@@ -150,10 +152,9 @@ class GenericAPIResource(APIResource):
 
         # Run the use case and return the results
         response_object = Tasklet.perform(
-            rf, schema_cls, usecase_cls, request_object_cls,payload)
+            rf, schema_cls, usecase_cls, request_object_cls, payload)
 
         if isinstance(response_object, ResponseFailure):
-            print(vars(response_object))
             return response_object.value, response_object.code
 
         elif many:
