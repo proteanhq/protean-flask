@@ -1,6 +1,5 @@
 """This module exposes the Base Resource View for all Application Views"""
 
-import importlib
 import json
 
 import inflect
@@ -18,7 +17,7 @@ from protean.core.tasklet import Tasklet
 from protean.core.transport import ResponseFailure
 from protean.core.repository import repo_factory
 
-from protean_flask.core.renderers import render_json
+from protean_flask.utils import perform_import
 
 INFLECTOR = inflect.engine()
 
@@ -28,7 +27,16 @@ class APIResource(MethodView):
     the standard five REST routes. Also handles rendering the output to json.
 
     """
-    renderer = render_json
+
+    def get_renderer(self):
+        """ Return the renderer to be used for this resource """
+        # If the view does not define a renderer then return the default
+        renderer = getattr(self, 'renderer', None)
+        if not renderer:
+            renderer = perform_import(
+                current_app.config['DEFAULT_RENDERER'])
+
+        return renderer
 
     def dispatch_request(self, *args, **kwargs):
         """Dispatch the request to the correct function"""
@@ -51,7 +59,7 @@ class APIResource(MethodView):
         response = meth(*args, **kwargs)
         if not isinstance(response, current_app.response_class):
             data, code, headers = self._unpack_response(response)
-            response = APIResource.renderer(data, code, headers)
+            response = self.get_renderer()(data, code, headers)
 
         return response
 
