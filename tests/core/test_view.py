@@ -1,6 +1,7 @@
 """Module to test View functionality and features"""
 
 import pytest
+import json
 
 from protean.core.repository import repo_factory
 from tests.support.sample_app import app
@@ -14,49 +15,24 @@ class TestCustomMethodView:
         """Test Dispatch request flow for different HTTP methods"""
 
 
-class TestGenericAPIResource:
-    """Class to test GenericAPIResource functionality and methods"""
+class TestGenericPIResource:
+    """Class to test Generic API Respoirce functionality and methods"""
 
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_init(self):
-        """Test initialization of GenericResource object"""
+    @classmethod
+    def setup_class(cls):
+        """ Setup for this test case"""
 
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_get(self):
-        """Test `get` method of GenericResource"""
-
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_index(self):
-        """Test `index` method of GenericResource"""
-
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_create(self):
-        """Test `create` method of GenericResource"""
-
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_update(self):
-        """Test `update` method of GenericResource"""
-
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_show(self):
-        """Test `show` method of GenericResource"""
-
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_delete(self):
-        """Test `delete` method of GenericResource"""
-
-
-class TestShowAPIResource:
-    """Class to test ShowAPIResource functionality and methods"""
+        # Create the test client
+        cls.client = app.test_client()
 
     def test_show(self):
-        """ Test that the show API returns an entity"""
+        """ Test retrieving an entity using ShowAPIResource"""
+
         # Create a dog object
         repo_factory.DogSchema.create(id=1, name='Johnny', owner='John')
 
         # Fetch this dog by ID
-        client = app.test_client()
-        rv = client.get('/dogs/1')
+        rv = self.client.get('/dogs/1')
         assert rv.status_code == 200
 
         expected_resp = {
@@ -65,9 +41,51 @@ class TestShowAPIResource:
         assert rv.json == expected_resp
 
         # Test search by invalid id
-        client = app.test_client()
-        rv = client.get('/dogs/2')
+        rv = self.client.get('/dogs/2')
         assert rv.status_code == 404
 
         # Delete the dog now
         repo_factory.DogSchema.delete(1)
+
+    def test_create(self):
+        """ Test creating an entity using CreateAPIResource """
+
+        # Create a dog object
+        rv = self.client.post('/dogs',
+                              data=json.dumps(
+                                  dict(id=1, name='Johnny', owner='John')),
+                              content_type='application/json')
+        assert rv.status_code == 201
+
+        expected_resp = {
+            'dog': {'age': 5, 'id': 1, 'name': 'Johnny', 'owner': 'John'}
+        }
+        assert rv.json == expected_resp
+
+        # Test value has been added to db
+        dog = repo_factory.DogSchema.get(1)
+        assert dog is not None
+        assert dog.id == 1
+
+        # Delete the dog now
+        repo_factory.DogSchema.delete(1)
+
+    def test_list(self):
+        """ Test listing an entity using ListAPIResource """
+        # Create a dog objects
+        repo_factory.DogSchema.create(id=1, name='Johnny', owner='John')
+        repo_factory.DogSchema.create(id=2, name='Mary', owner='John', age=3)
+        repo_factory.DogSchema.create(id=3, name='Grady', owner='Jane', age=8)
+        repo_factory.DogSchema.create(id=4, name='Brawny', owner='John', age=2)
+
+        # Get the list of dogs
+        rv = self.client.get('/dogs?order_by[]=age')
+        assert rv.status_code == 200
+        assert rv.json['total'] == 4
+        assert rv.json['dogs'][0] == \
+               {'age': 2, 'id': 4, 'name': 'Brawny', 'owner': 'John'}
+
+        # Test with filters
+        rv = self.client.get('/dogs?owner=Jane')
+        assert rv.status_code == 200
+        assert rv.json['total'] == 1
