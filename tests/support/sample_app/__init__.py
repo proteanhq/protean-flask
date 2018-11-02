@@ -1,7 +1,7 @@
 """ Sample Protean Flask app for testing"""
 from flask import Flask
 
-from protean_flask.core import Protean
+from protean_flask import Protean
 from .views import ShowDogResource
 
 app = Flask(__name__)
