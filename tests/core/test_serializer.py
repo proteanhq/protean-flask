@@ -2,34 +2,102 @@
 
 import pytest
 
+import marshmallow as ma
 
-class TestBaseSchema:
-    """Tests for BaseSchema class"""
+from protean.core.exceptions import ConfigurationError
 
-    @pytest.mark.skip(reason="To Be Implemented")
+from protean_flask.core.serializers import EntitySerializer
+
+
+from ..support.sample_app.entities import Dog
+
+
+class DogSerializer(EntitySerializer):
+    """ Serializer for the Dog Entity """
+    class Meta:
+        entity = Dog
+
+
+class TestEntitySerializer:
+    """Tests for EntitySerializer class"""
+
     def test_init(self):
-        """Test initialization of Base schema derived class"""
+        """Test initialization of EntitySerializer derived class"""
+        s = DogSerializer()
+        assert s is not None
 
-    @pytest.mark.skip(reason="To Be Implemented")
+        # Check that the entity gets serialized correctly
+        s_result = s.dump(Dog(id=1, name='Johnny', owner='John'))
+        expected_data = {'age': 5, 'id': 1, 'name': 'Johnny', 'owner': 'John'}
+        assert s_result.data == expected_data
+
     def test_abstraction(self):
-        """Test that BaseSchema class itself cannot be initialized"""
+        """Test that EntitySerializer class itself cannot be initialized"""
 
+        with pytest.raises(ConfigurationError):
+            EntitySerializer()
 
-class TestUserTimezone:
-    """Tests for UserTimezone utility class"""
+    def test_include_fields(self):
+        """ Test the include fields option of the serializer"""
 
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_serialize(self):
-        """Test serialization of Timestamp"""
+        class DogSerializer2(EntitySerializer):
+            """ Serializer for the Dog Entity """
+            class Meta:
+                entity = Dog
+                fields = ('id', 'age')
 
+        s = DogSerializer2()
+        assert s is not None
 
-class TestDictToArray:
-    """Tests for DictToArray conversion class"""
+        # Check that the entity gets serialized correctly
+        s_result = s.dump(Dog(id=1, name='Johnny', owner='John'))
+        expected_data = {'age': 5, 'id': 1}
+        assert s_result.data == expected_data
 
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_init(self):
-        """Test initialization of class derived from DictToArray"""
+    def test_exclude_fields(self):
+        """ Test the exclude fields option of the serializer"""
 
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_serialize(self):
-        """Test serialization of derived class"""
+        class DogSerializer2(EntitySerializer):
+            """ Serializer for the Dog Entity """
+            class Meta:
+                entity = Dog
+                exclude = ('id', 'age')
+
+        s = DogSerializer2()
+        assert s is not None
+
+        # Check that the entity gets serialized correctly
+        s_result = s.dump(Dog(id=1, name='Johnny', owner='John'))
+        expected_data = {'name': 'Johnny', 'owner': 'John'}
+        assert s_result.data == expected_data
+
+    def test_method_fields(self):
+        """ Test the method field type of the serializer"""
+
+        class DogSerializer2(EntitySerializer):
+            """ Serializer for the Dog Entity """
+            old = ma.fields.Method('get_old')
+
+            def get_old(self, obj):
+                """ Check if the dog is old or young """
+                if obj.age > 5:
+                    return True
+                else:
+                    return False
+
+            class Meta:
+                entity = Dog
+
+        s = DogSerializer2()
+        assert s is not None
+
+        # Check that the entity gets serialized correctly
+        s_result = s.dump(Dog(id=1, name='Johnny', owner='John'))
+        expected_data = {
+            'name': 'Johnny',
+            'owner': 'John',
+            'age': 5,
+            'id': 1,
+            'old': False
+        }
+        assert s_result.data == expected_data
