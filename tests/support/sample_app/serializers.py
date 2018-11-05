@@ -1,12 +1,13 @@
 """ Serializers used by the sample app """
 from marshmallow import fields
 
-from protean_flask.core.serializer import BaseSchema
+from protean_flask.core.serializers import EntitySerializer
+
+from .entities import Dog
 
 
-class DogSerializer(BaseSchema):
+class DogSerializer(EntitySerializer):
     """ Serializer for Dog Entity"""
-    id = fields.Integer()
-    name = fields.String()
-    age = fields.Integer()
-    owner = fields.String()
+
+    class Meta:
+        entity = Dog

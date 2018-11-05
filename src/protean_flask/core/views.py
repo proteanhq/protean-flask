@@ -16,8 +16,7 @@ from protean.core.usecase import (ShowRequestObject, ShowUseCase,
 from protean.core.tasklet import Tasklet
 from protean.core.transport import ResponseFailure
 from protean.core.repository import repo_factory
-
-from protean_flask.utils import perform_import
+from protean.utils import perform_import
 
 INFLECTOR = inflect.engine()
 
