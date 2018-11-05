@@ -3,7 +3,6 @@
 import json
 
 import inflect
-import inflection
 
 from flask import request, current_app
 from flask.views import MethodView
@@ -16,7 +15,8 @@ from protean.core.usecase import (ShowRequestObject, ShowUseCase,
 from protean.core.tasklet import Tasklet
 from protean.core.transport import ResponseFailure
 from protean.core.repository import repo_factory
-from protean.utils import perform_import
+from protean.utils.importlib import perform_import
+from protean.utils import inflection
 
 INFLECTOR = inflect.engine()
 
