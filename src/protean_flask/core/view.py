@@ -43,9 +43,11 @@ class APIResource(MethodView):
 
         # Lookup custom method defined for this resource
         func = request.url_rule.rule.rsplit('/', 1)[-1]
+        meth = None
         if func and (func[0] != '<' and func[1] != '>'):
             meth = getattr(self, func, None)
-        else:
+
+        if not meth:
             meth = getattr(self, request.method.lower(), None)
 
         # If the request method is HEAD and we don't have a handler for it
@@ -102,7 +104,7 @@ class GenericAPIResource(APIResource):
     def get_schema_cls(self):
         """
         Return the class to use for the serializer.
-        Defaults to using `self.entity_class`.
+        Defaults to using `self.schema_cls`.
         """
         if not self.schema_cls:
             raise AssertionError(
@@ -163,7 +165,7 @@ class GenericAPIResource(APIResource):
             rf, schema_cls, usecase_cls, request_object_cls, payload)
 
         if isinstance(response_object, ResponseFailure):
-            return response_object.value, response_object.code
+            return response_object.value, response_object.code.value
 
         elif many:
             items = serializer.dump(response_object.value.items)
@@ -204,8 +206,20 @@ class ListAPIResource(GenericAPIResource):
     def get(self):
         """List the entities.
         """
+        # Convert immutable dict to dict
+        payload = request.args.to_dict(flat=False)
+
+        # Remove trailing [] for list attrs
+        for key in payload:
+            val = payload.pop(key)
+            if len(val) > 1 or key.endswith('[]'):
+                payload[key.strip('[]')] = val
+            else:
+                payload[key] = val[0]
+
         return self._process_request(
-            self.usecase_cls, self.request_object_cls, payload=request.args)
+            self.usecase_cls, self.request_object_cls, payload=payload,
+            many=True)
 
 
 class CreateAPIResource(GenericAPIResource):
@@ -245,7 +259,7 @@ class DeleteAPIResource(GenericAPIResource):
     usecase_cls = DeleteUseCase
     request_object_cls = DeleteRequestObject
 
-    def put(self, identifier):
+    def delete(self, identifier):
         """Delete the entity.
          Expected Parameters:
              identifier = <string>, identifies the entity
