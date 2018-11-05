@@ -259,7 +259,7 @@ class DeleteAPIResource(GenericAPIResource):
     usecase_cls = DeleteUseCase
     request_object_cls = DeleteRequestObject
 
-    def put(self, identifier):
+    def delete(self, identifier):
         """Delete the entity.
          Expected Parameters:
              identifier = <string>, identifies the entity
