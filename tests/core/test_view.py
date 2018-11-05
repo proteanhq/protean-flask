@@ -1,7 +1,7 @@
 """Module to test View functionality and features"""
 
-import pytest
 import json
+import pytest
 
 from protean.core.exceptions import ObjectNotFoundError
 from protean.core.repository import repo_factory

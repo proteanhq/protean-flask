@@ -71,6 +71,13 @@ setup(
         'marshmallow==2.16.1',
         # eg: 'aspectlib==1.1.1', 'six>=1.7',
     ],
+    test_requires=[
+        'mock==2.0.0',
+        'pytest==3.6.3',
+        'pytest-cov==2.5.1',
+        'pytest-travis-fold==1.3.0',
+        'pluggy==0.6.0'
+    ],
     extras_require={
         # eg:
         #   'rst': ['docutils>=0.11'],

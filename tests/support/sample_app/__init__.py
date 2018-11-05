@@ -23,4 +23,3 @@ app.add_url_rule('/dogs/<int:identifier>',
 app.add_url_rule('/dogs/<int:identifier>',
                  view_func=DeleteDogResource.as_view('delete_dog'),
                  methods=['DELETE'])
-
