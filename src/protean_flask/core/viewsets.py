@@ -1,7 +1,7 @@
 """This module exposes a generic Viewset class"""
 import importlib
 
-from protean_flask.core.view import GenericAPIResource, INFLECTOR
+from protean_flask.core.views import GenericAPIResource, INFLECTOR
 
 
 class GenericAPIResourceSet(GenericAPIResource):

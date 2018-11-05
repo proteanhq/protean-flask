@@ -1,7 +1,7 @@
 """ Views of the sample app"""
-from protean_flask.core.view import (ShowAPIResource, ListAPIResource,
-                                     CreateAPIResource, UpdateAPIResource,
-                                     DeleteAPIResource)
+from protean_flask.core.views import (ShowAPIResource, ListAPIResource,
+                                      CreateAPIResource, UpdateAPIResource,
+                                      DeleteAPIResource)
 
 from .serializers import DogSerializer
 from .schemas import DogSchema

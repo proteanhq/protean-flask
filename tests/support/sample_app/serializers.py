@@ -1,7 +1,7 @@
 """ Serializers used by the sample app """
 from marshmallow import fields
 
-from protean_flask.core.serializer import BaseSchema
+from protean_flask.core.serializers import BaseSchema
 
 
 class DogSerializer(BaseSchema):
