@@ -9,16 +9,8 @@ from protean.core.repository import repo_factory
 from tests.support.sample_app import app
 
 
-class TestCustomMethodView:
-    """Class to test CustomMethodView methods"""
-
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_dispatch_request(self):
-        """Test Dispatch request flow for different HTTP methods"""
-
-
-class TestGenericPIResource:
-    """Class to test Generic API Respoirce functionality and methods"""
+class TestGenericAPIResource:
+    """Class to test Generic API Resource functionality and methods"""
 
     @classmethod
     def setup_class(cls):

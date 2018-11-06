@@ -1,8 +1,8 @@
 """This module exposes the Base Resource View for all Application Views"""
 
-import json
-
 import inflect
+
+from werkzeug.wrappers import parse_options_header
 
 from flask import request, current_app
 from flask.views import MethodView
@@ -17,6 +17,8 @@ from protean.core.transport import ResponseFailure
 from protean.core.repository import repo_factory
 from protean.utils.importlib import perform_import
 from protean.utils import inflection
+
+from protean_flask.utils import immutable_dict_2_dict
 
 INFLECTOR = inflect.engine()
 
@@ -37,6 +39,33 @@ class APIResource(MethodView):
 
         return renderer
 
+    def parse_payload(self):
+        """ Load the data from form, json and query to `request.payload` """
+
+        # Parse the request content based on the content type
+        content_type = (request.content_type or
+                        current_app.config['DEFAULT_CONTENT_TYPE'])
+        mime_type, _ = parse_options_header(content_type)
+
+        if request.method in ['POST', 'PUT', 'PATCH']:
+            if mime_type == 'application/x-www-form-urlencoded':
+                request.payload = immutable_dict_2_dict(request.form)
+            elif mime_type == 'multipart/form-data':
+                request.payload = immutable_dict_2_dict(request.form)
+                request.payload.update(
+                    immutable_dict_2_dict(request.files))
+            elif mime_type == 'application/json':
+                request.payload = request.get_json(force=True)
+
+        elif request.method == 'GET':
+            request.payload = immutable_dict_2_dict(request.args)
+
+        # If a customer parser is defined then run that
+        parser = getattr(self, 'parser', None)
+        if parser:
+            parser = perform_import(parser)
+            parser()
+
     def dispatch_request(self, *args, **kwargs):
         """Dispatch the request to the correct function"""
 
@@ -55,6 +84,9 @@ class APIResource(MethodView):
             meth = getattr(self, 'get', None)
 
         assert meth is not None, 'Unimplemented method %r' % request.method
+
+        # Parse the request input and populate the payload
+        self.parse_payload()
 
         # Call the method and create the response
         response = meth(*args, **kwargs)
@@ -205,19 +237,8 @@ class ListAPIResource(GenericAPIResource):
     def get(self):
         """List the entities.
         """
-        # Convert immutable dict to dict
-        payload = request.args.to_dict(flat=False)
-
-        # Remove trailing [] for list attrs
-        for key in payload:
-            val = payload.pop(key)
-            if len(val) > 1 or key.endswith('[]'):
-                payload[key.strip('[]')] = val
-            else:
-                payload[key] = val[0]
-
         return self._process_request(
-            self.usecase_cls, self.request_object_cls, payload=payload,
+            self.usecase_cls, self.request_object_cls, payload=request.payload,
             many=True)
 
 
@@ -230,9 +251,8 @@ class CreateAPIResource(GenericAPIResource):
     def post(self):
         """Create the entity.
         """
-        payload = json.loads(request.data)
         return self._process_request(
-            self.usecase_cls, self.request_object_cls, payload=payload)
+            self.usecase_cls, self.request_object_cls, payload=request.payload)
 
 
 class UpdateAPIResource(GenericAPIResource):
@@ -246,7 +266,7 @@ class UpdateAPIResource(GenericAPIResource):
          Expected Parameters:
              identifier = <string>, identifies the entity
         """
-        payload = json.loads(request.data)
+        payload = request.payload
         payload.update({'identifier': identifier})
         return self._process_request(
             self.usecase_cls, self.request_object_cls, payload=payload)
