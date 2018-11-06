@@ -3,7 +3,7 @@ from flask import Flask
 
 from protean_flask import Protean
 from .views import ShowDogResource, CreateDogResource, UpdateDogResource, \
-    DeleteDogResource, ListDogResource
+    DeleteDogResource, ListDogResource, flask_view
 
 app = Flask(__name__)
 api = Protean(app)
@@ -23,3 +23,5 @@ app.add_url_rule('/dogs/<int:identifier>',
 app.add_url_rule('/dogs/<int:identifier>',
                  view_func=DeleteDogResource.as_view('delete_dog'),
                  methods=['DELETE'])
+app.add_url_rule('/flask-view', view_func=flask_view,
+                 methods=['GET'])

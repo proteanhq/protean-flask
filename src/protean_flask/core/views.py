@@ -13,7 +13,6 @@ from protean.core.usecase import (ShowRequestObject, ShowUseCase,
                                   UpdateRequestObject, UpdateUseCase,
                                   DeleteRequestObject, DeleteUseCase)
 from protean.core.tasklet import Tasklet
-from protean.core.transport import ResponseFailure
 from protean.core.repository import repo_factory
 from protean.utils.importlib import perform_import
 from protean.utils import inflection
@@ -29,10 +28,11 @@ class APIResource(MethodView):
 
     """
 
-    def get_renderer(self):
+    @classmethod
+    def get_renderer(cls):
         """ Return the renderer to be used for this resource """
         # If the view does not define a renderer then return the default
-        renderer = getattr(self, 'renderer', None)
+        renderer = getattr(cls, 'renderer', None)
         if not renderer:
             renderer = perform_import(
                 current_app.config['DEFAULT_RENDERER'])
@@ -193,12 +193,11 @@ class GenericAPIResource(APIResource):
 
         # Run the use case and return the results
         response_object = Tasklet.perform(
-            rf, schema_cls, usecase_cls, request_object_cls, payload)
+            rf, schema_cls, usecase_cls, request_object_cls, payload,
+            raise_error=True)
 
-        if isinstance(response_object, ResponseFailure):
-            return response_object.value, response_object.code.value
-
-        elif many:
+        # Serialize the results and return the response
+        if many:
             items = serializer.dump(response_object.value.items)
             result = {
                 INFLECTOR.plural(resource): items.data,
