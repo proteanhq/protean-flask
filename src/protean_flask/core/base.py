@@ -97,20 +97,16 @@ class Protean(object):
             if isinstance(view_func, APIResource):
                 renderer = view_class.get_renderer()
 
-        # Default to Server Error
-        default_message = {
-            'code': 500, 'message': "Something went wrong. Please try later!!"}
-        code, data, headers = 500, default_message, {}
-
         # If user has defined an exception handler then call that
         exception_handler = perform_import(
             current_app.config['EXCEPTION_HANDLER'])
         if exception_handler:
             code, data, headers = exception_handler(e)
 
-        elif isinstance(e, UsecaseExecutionError):
+        else:
             code = e.value[0].value
             data = e.value[1]
+            headers = {}
 
         # Build the response and return it
         response = renderer(data, code, headers)
