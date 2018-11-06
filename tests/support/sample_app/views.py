@@ -35,3 +35,8 @@ class DeleteDogResource(DeleteAPIResource):
     """ View for deleting a Dog by its ID"""
     schema_cls = DogSchema
     serializer_cls = DogSerializer
+
+
+def flask_view():
+    """ A non protean flask view """
+    return 'View Response', 200

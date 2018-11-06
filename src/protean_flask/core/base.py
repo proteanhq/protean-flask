@@ -1,7 +1,11 @@
 """Module that defines entry point to the Protean Flask Application"""
-from flask import Request
+from flask import Request, request, current_app
 
+from protean.core.exceptions import UsecaseExecutionError
+from protean.utils.importlib import perform_import
 from protean.conf import active_config
+
+from .views import APIResource
 
 
 class ProteanRequest(Request):
@@ -40,10 +44,14 @@ class Protean(object):
         # Update the request class for the app
         app.request_class = ProteanRequest
 
+        # Register error handlers for the app
+        app.register_error_handler(UsecaseExecutionError,
+                                   self._handle_exception)
         # Set the default configurations
         app.config.setdefault('DEFAULT_RENDERER',
                               'protean_flask.core.renderers.render_json')
         app.config.setdefault('DEFAULT_CONTENT_TYPE', 'application/json')
+        app.config.setdefault('EXCEPTION_HANDLER', None)
 
         # Update the current configuration
         app.config.from_object(active_config)
@@ -77,3 +85,29 @@ class Protean(object):
         self.app.add_url_rule('%s<%s:%s>' % (url, pk_type, p_key),
                               view_func=view_func,
                               methods=['GET', 'PUT', 'DELETE'])
+
+    def _handle_exception(self, e):
+        """ Handle Protean exceptions and return appropriate response """
+
+        # Get the renderer from the view class
+        renderer = perform_import(current_app.config['DEFAULT_RENDERER'])
+        if request.url_rule:
+            view_func = current_app.view_functions[request.url_rule.endpoint]
+            view_class = view_func.view_class
+            if isinstance(view_func, APIResource):
+                renderer = view_class.get_renderer()
+
+        # If user has defined an exception handler then call that
+        exception_handler = perform_import(
+            current_app.config['EXCEPTION_HANDLER'])
+        if exception_handler:
+            code, data, headers = exception_handler(e)
+
+        else:
+            code = e.value[0].value
+            data = e.value[1]
+            headers = {}
+
+        # Build the response and return it
+        response = renderer(data, code, headers)
+        return response

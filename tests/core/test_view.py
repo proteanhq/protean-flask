@@ -124,3 +124,16 @@ class TestGenericAPIResource:
         # Test value has been updated in the db
         with pytest.raises(ObjectNotFoundError):
             repo_factory.DogSchema.get(5)
+
+
+def test_flask_view():
+    """ Test that non Protean views work as before """
+    # Create the test client
+    client = app.test_client()
+
+    rv = client.get('/flask-view')
+    assert rv.status_code == 200
+    assert rv.data == b'View Response'
+
+    rv = client.get('/flask-view/abc')
+    assert rv.status_code == 404
