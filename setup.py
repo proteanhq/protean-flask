@@ -67,7 +67,7 @@ setup(
         'click==6.7',
         'werkzeug==0.14.1',
         'flask==1.0.2',
-        'inflect-1.0.1',
+        'inflect==1.0.1',
         'protean==0.0.4',
         'marshmallow==2.16.1',
         # eg: 'aspectlib==1.1.1', 'six>=1.7',
