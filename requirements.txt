@@ -1,3 +1,4 @@
+werkzeug==0.14.1
 flask==1.0.2
 click==6.7
 inflect==1.0.1
