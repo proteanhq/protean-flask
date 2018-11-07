@@ -56,14 +56,9 @@ class Protean(object):
         # Update the current configuration
         app.config.from_object(active_config)
 
-    def register_viewset(self, view, endpoint, url, module, resource,
-                         p_key='identifier', pk_type='string',
-                         additional_routes=None):
+    def register_viewset(self, view, endpoint, url, pk_name='identifier',
+                         pk_type='string', additional_routes=None):
         """Register a Viewset
-
-        Pass the Resource class along with the URL
-            `module` should be the folder that contains views.py, entities.py etc.
-            `resource` is the name around which all other classes will be derived
 
         Additional routes (apart from the standard five) can be specified via
             `additional_routes` argument. Note that the route names have to be
@@ -71,7 +66,7 @@ class Protean(object):
         """
         if additional_routes is None:
             additional_routes = list()
-        view_func = view.as_view(endpoint, module=module, resource=resource)
+        view_func = view.as_view(endpoint)
 
         # Custom Routes
         for route in additional_routes:
@@ -79,10 +74,13 @@ class Protean(object):
                 '{}{}'.format(url, route), view_func=view_func)
 
         # Standard routes
-        self.app.add_url_rule(url, defaults={p_key: None},
+        self.app.add_url_rule(url, defaults={pk_name: None},
                               view_func=view_func, methods=['GET', ])
         self.app.add_url_rule(url, view_func=view_func, methods=['POST', ])
-        self.app.add_url_rule('%s<%s:%s>' % (url, pk_type, p_key),
+
+        # Make sure that the url ends with a
+        url = f'{url}/' if not url.endswith('/') else url
+        self.app.add_url_rule('%s<%s:%s>' % (url, pk_type, pk_name),
                               view_func=view_func,
                               methods=['GET', 'PUT', 'DELETE'])
 
