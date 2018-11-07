@@ -178,8 +178,8 @@ class GenericAPIResource(APIResource):
 
     def _process_request(self, usecase_cls, request_object_cls, payload,
                          many=False, no_serialization=False):
-
-        # Get the resource name
+        """ Process the request by running the Protean Tasklet """
+        # Get the schema class and derive resource name
         schema_cls = self.get_schema_cls()
         resource = inflection.underscore(schema_cls.opts.entity_cls.__name__)
 
@@ -195,6 +195,10 @@ class GenericAPIResource(APIResource):
         response_object = Tasklet.perform(
             rf, schema_cls, usecase_cls, request_object_cls, payload,
             raise_error=True)
+
+        # If no serialization is set just return the response object
+        if no_serialization:
+            return response_object
 
         # Serialize the results and return the response
         if many:

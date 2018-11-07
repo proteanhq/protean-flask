@@ -1,35 +1,108 @@
 """Module to test Viewset functionality and features"""
+import json
 
-import pytest
+from protean.core.repository import repo_factory
+
+from tests.support.sample_app import app
 
 
-class TestGenericAPIResource:
-    """Class to test GenericAPIResource functionality and methods"""
+class TestGenericAPIResourceSet:
+    """Class to test GenericAPIResourceSet functionality and methods"""
 
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_init(self):
-        """Test initialization of GenericResource object"""
+    @classmethod
+    def setup_class(cls):
+        """ Setup for this test case"""
 
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_get(self):
-        """Test `get` method of GenericResource"""
+        # Create the test client
+        cls.client = app.test_client()
 
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_index(self):
-        """Test `index` method of GenericResource"""
+    def test_set_show(self):
+        """ Test retrieving an entity using the resource set"""
+        # Create a human object
+        repo_factory.HumanSchema.create(id=1, name='John')
 
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_create(self):
-        """Test `create` method of GenericResource"""
+        # Fetch this human by ID
+        rv = self.client.get('/humans/1')
+        assert rv.status_code == 200
+        expected_resp = {
+            'human': {'contact': None, 'id': 1, 'name': 'John'}
+        }
+        assert rv.json == expected_resp
 
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_update(self):
-        """Test `update` method of GenericResource"""
+        # Delete the human now
+        repo_factory.HumanSchema.delete(1)
 
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_show(self):
-        """Test `show` method of GenericResource"""
+    def test_set_list(self):
+        """ Test listing an entity using the resource set"""
+        # Create Human objects
+        repo_factory.HumanSchema.create(id=2, name='Jane')
+        repo_factory.HumanSchema.create(id=3, name='Mary')
 
-    @pytest.mark.skip(reason="To Be Implemented")
-    def test_delete(self):
-        """Test `delete` method of GenericResource"""
+        # Get the list of humans
+        rv = self.client.get('/humans?order_by[]=id')
+        assert rv.status_code == 200
+        assert rv.json['total'] == 2
+        assert rv.json['humans'][0] == \
+               {'id': 2, 'name': 'Jane', 'contact': None}
+
+    def test_set_create(self):
+        """ Test creating an entity using the resource set """
+
+        # Create a human object
+        rv = self.client.post('/humans',
+                              data=json.dumps(
+                                  dict(id=1, name='John')),
+                              content_type='application/json')
+        assert rv.status_code == 201
+
+        expected_resp = {
+            'human': {'contact': None, 'id': 1, 'name': 'John'}
+        }
+        assert rv.json == expected_resp
+
+        # Delete the human now
+        repo_factory.HumanSchema.delete(1)
+
+    def test_set_update(self):
+        """ Test updating an entity using the resource set """
+
+        # Create a human object
+        repo_factory.HumanSchema.create(id=1, name='John')
+
+        # Update the human object
+        rv = self.client.put('/humans/1',
+                             data=json.dumps(dict(contact='9000900090')),
+                             content_type='application/json')
+        assert rv.status_code == 200
+
+        expected_resp = {
+            'human': {'contact': '9000900090', 'id': 1, 'name': 'John'}
+        }
+        assert rv.json == expected_resp
+
+        # Delete the human now
+        repo_factory.HumanSchema.delete(1)
+
+    def test_set_delete(self):
+        """ Test deleting an entity using the resource set """
+
+        # Create a human object
+        repo_factory.HumanSchema.create(id=1, name='John')
+
+        # Delete the dog object
+        rv = self.client.delete('/humans/1')
+        assert rv.status_code == 204
+        assert rv.data == b''
+
+    def test_custom_route(self):
+        """ Test custom routes using the resource set """
+
+        # Create a human object
+        repo_factory.HumanSchema.create(id=1, name='John')
+
+        # Get the custom route
+        rv = self.client.get('/humans/1/my_dogs')
+        assert rv.status_code == 200
+        assert rv.json['total'] == 3
+        assert rv.json['dogs'][0] == \
+               {'age': 2, 'id': 4, 'name': 'Brawny', 'owner': 'John'}

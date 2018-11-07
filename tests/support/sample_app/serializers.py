@@ -1,9 +1,7 @@
 """ Serializers used by the sample app """
-from marshmallow import fields
-
 from protean_flask.core.serializers import EntitySerializer
 
-from .entities import Dog
+from .entities import Dog, Human
 
 
 class DogSerializer(EntitySerializer):
@@ -11,3 +9,10 @@ class DogSerializer(EntitySerializer):
 
     class Meta:
         entity = Dog
+
+
+class HumanSerializer(EntitySerializer):
+    """ Serializer for Human Entity"""
+
+    class Meta:
+        entity = Human

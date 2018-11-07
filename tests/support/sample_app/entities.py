@@ -9,3 +9,10 @@ class Dog(Entity):
     name = field.String(required=True, max_length=50)
     age = field.Integer(default=5)
     owner = field.String(required=True, max_length=15)
+
+
+class Human(Entity):
+    """ This is a dummy Human class """
+    id = field.Integer(identifier=True)
+    name = field.String(required=True, max_length=50)
+    contact = field.String()
