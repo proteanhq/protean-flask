@@ -1,8 +1,6 @@
 """Module to test Viewset functionality and features"""
 import json
-import pytest
 
-from protean.core.exceptions import ObjectNotFoundError
 from protean.core.repository import repo_factory
 
 from tests.support.sample_app import app
