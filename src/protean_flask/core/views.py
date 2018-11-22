@@ -181,7 +181,7 @@ class GenericAPIResource(APIResource):
         """ Process the request by running the Protean Tasklet """
         # Get the schema class and derive resource name
         schema_cls = self.get_schema_cls()
-        resource = inflection.underscore(schema_cls.opts.entity_cls.__name__)
+        resource = inflection.underscore(schema_cls.opts_.entity_cls.__name__)
 
         # Get the serializer for this class
         serializer = None
@@ -269,8 +269,10 @@ class UpdateAPIResource(GenericAPIResource):
          Expected Parameters:
              identifier = <string>, identifies the entity
         """
-        payload = request.payload
-        payload.update({'identifier': identifier})
+        payload = {
+            'identifier': identifier,
+            'data': request.payload
+        }
         return self._process_request(
             self.usecase_cls, self.request_object_cls, payload=payload)
 
