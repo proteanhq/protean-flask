@@ -2,7 +2,7 @@ language: python
 python:
   - '3.6'
 install:
-  - pip install -I -r requirements/test.txt
+  - pip install -r requirements/test.txt
   - python setup.py install
 script:
   - pytest --cov=protean_flask --cov-config .coveragerc tests
