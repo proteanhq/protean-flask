@@ -1,6 +1,6 @@
 werkzeug==0.14.1
 flask==1.0.2
-click==6.7
+click==7.0
 inflect==1.0.1
 marshmallow==2.16.1
 -r requirements/dev.txt

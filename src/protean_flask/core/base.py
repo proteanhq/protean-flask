@@ -1,5 +1,5 @@
 """Module that defines entry point to the Protean Flask Application"""
-from flask import Request, request, current_app
+from flask import Request, request, current_app, Blueprint
 
 from protean.core.exceptions import UsecaseExecutionError
 from protean.utils.importlib import perform_import
@@ -24,15 +24,21 @@ class Protean(object):
     Alternatively, you can use :meth:`init_app` to set the Flask application
     after it has been constructed.
 
-    :param app: the Flask application object
-    :type app: flask.Flask or flask.Blueprint
+    :param app_or_bp: the Flask application or blueprint object.
 
     """
 
-    def __init__(self, app=None):
-        if app is not None:
-            self.init_app(app)
-        self.app = app
+    def __init__(self, app_or_bp=None):
+        self.app = None
+        self.blueprint = None
+        self.viewsets = []
+
+        if app_or_bp is not None:
+            self.app = app_or_bp
+            if isinstance(app_or_bp, Blueprint):
+                self.blueprint = app_or_bp
+            else:
+                self.init_app(app_or_bp)
 
     def init_app(self, app):
         """Perform initialization actions with the given :class:`flask.Flask`
@@ -64,11 +70,11 @@ class Protean(object):
             `additional_routes` argument. Note that the route names have to be
             the same as method names
         """
-        if additional_routes is None:
-            additional_routes = list()
         view_func = view.as_view(endpoint)
 
-        # Custom Routes
+        # add the custom routes to the app
+        if additional_routes is None:
+            additional_routes = list()
         for route in additional_routes:
             self.app.add_url_rule(
                 '{}{}'.format(url, route), view_func=view_func)

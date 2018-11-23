@@ -45,7 +45,7 @@ class EntitySerializer(BaseSerializer):
 
         entity_fields = OrderedDict()
         for field_name, field_obj in \
-                self.opts.entity._declared_fields.items():  # pylint: w0212
+                self.opts.entity.meta_.declared_fields.items():
             if field_name not in self.declared_fields:
                 entity_fields[field_name] = self.build_field(field_obj)
 

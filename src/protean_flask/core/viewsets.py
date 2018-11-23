@@ -48,8 +48,10 @@ class GenericAPIResourceSet(GenericAPIResource):
          Expected Parameters:
              identifier = <string>, identifies the entity
         """
-        payload = request.payload
-        payload.update({'identifier': identifier})
+        payload = {
+            'identifier': identifier,
+            'data': request.payload
+        }
         return self._process_request(
             self.update_usecase, self.update_request_object, payload=payload)
 
