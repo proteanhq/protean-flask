@@ -4,7 +4,7 @@ import json
 import pytest
 
 from protean.core.exceptions import ObjectNotFoundError
-from protean.core.repository import repo_factory
+from protean.core.repository import repo
 
 from tests.support.sample_app import app
 
@@ -23,7 +23,7 @@ class TestGenericAPIResource:
         """ Test retrieving an entity using ShowAPIResource"""
 
         # Create a dog object
-        repo_factory.DogSchema.create(id=5, name='Johnny', owner='John')
+        repo.DogSchema.create(id=5, name='Johnny', owner='John')
 
         # Fetch this dog by ID
         rv = self.client.get('/dogs/5')
@@ -39,15 +39,15 @@ class TestGenericAPIResource:
         assert rv.status_code == 404
 
         # Delete the dog now
-        repo_factory.DogSchema.delete(5)
+        repo.DogSchema.delete(5)
 
     def test_list(self):
         """ Test listing an entity using ListAPIResource """
         # Create a dog objects
-        repo_factory.DogSchema.create(id=1, name='Johnny', owner='John')
-        repo_factory.DogSchema.create(id=2, name='Mary', owner='John', age=3)
-        repo_factory.DogSchema.create(id=3, name='Grady', owner='Jane', age=8)
-        repo_factory.DogSchema.create(id=4, name='Brawny', owner='John', age=2)
+        repo.DogSchema.create(id=1, name='Johnny', owner='John')
+        repo.DogSchema.create(id=2, name='Mary', owner='John', age=3)
+        repo.DogSchema.create(id=3, name='Grady', owner='Jane', age=8)
+        repo.DogSchema.create(id=4, name='Brawny', owner='John', age=2)
 
         # Get the list of dogs
         rv = self.client.get('/dogs?order_by[]=age')
@@ -77,18 +77,18 @@ class TestGenericAPIResource:
         assert rv.json == expected_resp
 
         # Test value has been added to db
-        dog = repo_factory.DogSchema.get(5)
+        dog = repo.DogSchema.get(5)
         assert dog is not None
         assert dog.id == 5
 
         # Delete the dog now
-        repo_factory.DogSchema.delete(5)
+        repo.DogSchema.delete(5)
 
     def test_update(self):
         """ Test updating an entity using UpdateAPIResource """
 
         # Create a dog object
-        repo_factory.DogSchema.create(id=5, name='Johnny', owner='John')
+        repo.DogSchema.create(id=5, name='Johnny', owner='John')
 
         # Update the dog object
         rv = self.client.put('/dogs/5',
@@ -102,18 +102,18 @@ class TestGenericAPIResource:
         assert rv.json == expected_resp
 
         # Test value has been updated in the db
-        dog = repo_factory.DogSchema.get(5)
+        dog = repo.DogSchema.get(5)
         assert dog is not None
         assert dog.age == 3
 
         # Delete the dog now
-        repo_factory.DogSchema.delete(5)
+        repo.DogSchema.delete(5)
 
     def test_delete(self):
         """ Test deleting an entity using DeleteAPIResource """
 
         # Create a dog object
-        repo_factory.DogSchema.create(id=5, name='Johnny', owner='John')
+        repo.DogSchema.create(id=5, name='Johnny', owner='John')
 
         # Delete the dog object
         rv = self.client.delete('/dogs/5')
@@ -123,7 +123,7 @@ class TestGenericAPIResource:
 
         # Test value has been updated in the db
         with pytest.raises(ObjectNotFoundError):
-            repo_factory.DogSchema.get(5)
+            repo.DogSchema.get(5)
 
 
 def test_flask_view():

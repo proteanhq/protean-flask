@@ -1,10 +1,5 @@
 """Module to test View functionality and features"""
-
-import json
-import pytest
-
-from protean.core.exceptions import ObjectNotFoundError
-from protean.core.repository import repo_factory
+from protean.core.repository import repo
 
 from tests.support.sample_app import app
 
@@ -24,14 +19,14 @@ class TestBlueprint:
         """ Teardown for this test case"""
 
         # Delete all dog objects
-        repo_factory.DogSchema.delete_all()
-        repo_factory.HumanSchema.delete_all()
+        repo.DogSchema.delete_all()
+        repo.HumanSchema.delete_all()
 
     def test_show(self):
         """ Test retrieving an entity using blueprint ShowAPIResource"""
 
         # Create a dog object
-        repo_factory.DogSchema.create(id=5, name='Johnny', owner='John')
+        repo.DogSchema.create(id=5, name='Johnny', owner='John')
 
         # Fetch this dog by ID
         rv = self.client.get('/blueprint/dogs/5')
@@ -47,12 +42,12 @@ class TestBlueprint:
         assert rv.status_code == 404
 
         # Delete the dog now
-        repo_factory.DogSchema.delete(5)
+        repo.DogSchema.delete(5)
 
     def test_set_show(self):
         """ Test retrieving an entity using the blueprint resource set"""
         # Create a human object
-        repo_factory.HumanSchema.create(id=1, name='John')
+        repo.HumanSchema.create(id=1, name='John')
 
         # Fetch this human by ID
         rv = self.client.get('/blueprint/humans/1')
@@ -63,14 +58,14 @@ class TestBlueprint:
         assert rv.json == expected_resp
 
         # Delete the human now
-        repo_factory.HumanSchema.delete(1)
+        repo.HumanSchema.delete(1)
 
     def test_custom_route(self):
         """ Test custom routes using the blueprint resource set """
 
         # Create a human object
-        repo_factory.HumanSchema.create(id=1, name='John')
-        repo_factory.DogSchema.create(id=5, name='Johnny', owner='John')
+        repo.HumanSchema.create(id=1, name='John')
+        repo.DogSchema.create(id=5, name='Johnny', owner='John')
 
         # Get the custom route
         rv = self.client.get('/humans/1/my_dogs')

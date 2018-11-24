@@ -3,7 +3,7 @@ from protean.core.usecase import ListUseCase, ListRequestObject, UseCase, \
     ShowRequestObject
 from protean.core.tasklet import Tasklet
 
-from .schemas import DogSchema, repo_factory
+from .schemas import DogSchema, repo
 
 
 class ListMyDogsRequestObject(ShowRequestObject):
@@ -19,6 +19,6 @@ class ListMyDogsUsecase(UseCase):
         # Get the dogs related to the human
         payload = {'owner': human.name, 'order_by': ['age']}
         response_object = Tasklet.perform(
-            repo_factory, DogSchema, ListUseCase, ListRequestObject, payload,
+            repo, DogSchema, ListUseCase, ListRequestObject, payload,
             raise_error=True)
         return response_object

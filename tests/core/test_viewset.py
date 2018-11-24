@@ -1,7 +1,7 @@
 """Module to test Viewset functionality and features"""
 import json
 
-from protean.core.repository import repo_factory
+from protean.core.repository import repo
 
 from tests.support.sample_app import app
 
@@ -19,7 +19,7 @@ class TestGenericAPIResourceSet:
     def test_set_show(self):
         """ Test retrieving an entity using the resource set"""
         # Create a human object
-        repo_factory.HumanSchema.create(id=1, name='John')
+        repo.HumanSchema.create(id=1, name='John')
 
         # Fetch this human by ID
         rv = self.client.get('/humans/1')
@@ -30,13 +30,13 @@ class TestGenericAPIResourceSet:
         assert rv.json == expected_resp
 
         # Delete the human now
-        repo_factory.HumanSchema.delete(1)
+        repo.HumanSchema.delete(1)
 
     def test_set_list(self):
         """ Test listing an entity using the resource set"""
         # Create Human objects
-        repo_factory.HumanSchema.create(id=2, name='Jane')
-        repo_factory.HumanSchema.create(id=3, name='Mary')
+        repo.HumanSchema.create(id=2, name='Jane')
+        repo.HumanSchema.create(id=3, name='Mary')
 
         # Get the list of humans
         rv = self.client.get('/humans?order_by[]=id')
@@ -61,13 +61,13 @@ class TestGenericAPIResourceSet:
         assert rv.json == expected_resp
 
         # Delete the human now
-        repo_factory.HumanSchema.delete(1)
+        repo.HumanSchema.delete(1)
 
     def test_set_update(self):
         """ Test updating an entity using the resource set """
 
         # Create a human object
-        repo_factory.HumanSchema.create(id=1, name='John')
+        repo.HumanSchema.create(id=1, name='John')
 
         # Update the human object
         rv = self.client.put('/humans/1',
@@ -81,13 +81,13 @@ class TestGenericAPIResourceSet:
         assert rv.json == expected_resp
 
         # Delete the human now
-        repo_factory.HumanSchema.delete(1)
+        repo.HumanSchema.delete(1)
 
     def test_set_delete(self):
         """ Test deleting an entity using the resource set """
 
         # Create a human object
-        repo_factory.HumanSchema.create(id=1, name='John')
+        repo.HumanSchema.create(id=1, name='John')
 
         # Delete the dog object
         rv = self.client.delete('/humans/1')
@@ -98,7 +98,7 @@ class TestGenericAPIResourceSet:
         """ Test custom routes using the resource set """
 
         # Create a human object
-        repo_factory.HumanSchema.create(id=1, name='John')
+        repo.HumanSchema.create(id=1, name='John')
 
         # Get the custom route
         rv = self.client.get('/humans/1/my_dogs')

@@ -13,7 +13,7 @@ from protean.core.usecase import (ShowRequestObject, ShowUseCase,
                                   UpdateRequestObject, UpdateUseCase,
                                   DeleteRequestObject, DeleteUseCase)
 from protean.core.tasklet import Tasklet
-from protean.core.repository import repo_factory
+from protean.core.repository import repo
 from protean.utils.importlib import perform_import
 from protean.utils import inflection
 
@@ -123,14 +123,14 @@ class GenericAPIResource(APIResource):
 
     schema_cls = None
     serializer_cls = None
-    repo_factory = None
+    repo = None
 
     def get_repository_factory(self):
         """ Returns the repository factory to be used
         Uses the attribute `self.repo_factory` or
         defaults to using `protean.repository.rf`.
         """
-        return self.repo_factory or repo_factory
+        return self.repo or repo
 
     def get_schema_cls(self):
         """
