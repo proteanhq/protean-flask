@@ -198,7 +198,7 @@ class GenericAPIResource(APIResource):
 
         # If no serialization is set just return the response object
         if no_serialization:
-            return response_object
+            return response_object.value
 
         # Serialize the results and return the response
         if many:

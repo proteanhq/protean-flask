@@ -48,19 +48,19 @@ class HumanResourceSet(GenericAPIResourceSet):
         """ List all the dogs belonging to the Human"""
         # Run the usecase and get the related dogs
         payload = {'identifier': identifier}
-        response_object = self._process_request(
+        dogs_list = self._process_request(
             ListMyDogsUsecase, ListMyDogsRequestObject, payload=payload,
             no_serialization=True)
 
         # Serialize the results and return the response
         serializer = DogSerializer(many=True)
-        items = serializer.dump(response_object.value.items)
+        items = serializer.dump(dogs_list.items)
         result = {
             'dogs': items.data,
-            'total': response_object.value.total,
-            'page': response_object.value.page
+            'total': dogs_list.total,
+            'page': dogs_list.page
         }
-        return result, response_object.code.value
+        return result, 200
 
 
 def flask_view():
