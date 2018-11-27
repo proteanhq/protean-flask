@@ -16,6 +16,7 @@ from protean.core.tasklet import Tasklet
 from protean.core.repository import repo
 from protean.utils.importlib import perform_import
 from protean.utils import inflection
+from protean.conf import active_config
 
 from protean_flask.utils import immutable_dict_2_dict
 
@@ -34,8 +35,7 @@ class APIResource(MethodView):
         # If the view does not define a renderer then return the default
         renderer = getattr(cls, 'renderer', None)
         if not renderer:
-            renderer = perform_import(
-                current_app.config['DEFAULT_RENDERER'])
+            renderer = perform_import(active_config.DEFAULT_RENDERER)
 
         return renderer
 
@@ -44,7 +44,7 @@ class APIResource(MethodView):
 
         # Parse the request content based on the content type
         content_type = (request.content_type or
-                        current_app.config['DEFAULT_CONTENT_TYPE'])
+                        active_config.DEFAULT_CONTENT_TYPE)
         mime_type, _ = parse_options_header(content_type)
 
         if request.method in ['POST', 'PUT', 'PATCH']:

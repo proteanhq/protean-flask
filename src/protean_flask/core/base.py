@@ -51,13 +51,8 @@ class Protean(object):
         app.request_class = ProteanRequest
 
         # Register error handlers for the app
-        app.register_error_handler(UsecaseExecutionError,
-                                   self._handle_exception)
-        # Set the default configurations
-        app.config.setdefault('DEFAULT_RENDERER',
-                              'protean_flask.core.renderers.render_json')
-        app.config.setdefault('DEFAULT_CONTENT_TYPE', 'application/json')
-        app.config.setdefault('EXCEPTION_HANDLER', None)
+        app.register_error_handler(
+            UsecaseExecutionError, self._handle_exception)
 
         # Update the current configuration
         app.config.from_object(active_config)
@@ -94,7 +89,7 @@ class Protean(object):
         """ Handle Protean exceptions and return appropriate response """
 
         # Get the renderer from the view class
-        renderer = perform_import(current_app.config['DEFAULT_RENDERER'])
+        renderer = perform_import(active_config.DEFAULT_RENDERER)
         if request.url_rule:
             view_func = current_app.view_functions[request.url_rule.endpoint]
             view_class = view_func.view_class
@@ -102,8 +97,7 @@ class Protean(object):
                 renderer = view_class.get_renderer()
 
         # If user has defined an exception handler then call that
-        exception_handler = perform_import(
-            current_app.config['EXCEPTION_HANDLER'])
+        exception_handler = perform_import(active_config.EXCEPTION_HANDLER)
         if exception_handler:
             code, data, headers = exception_handler(e)
 
