@@ -1,5 +1,6 @@
 """ Configuration variables used by Protean-Flask """
 
+
 class ProteanFlaskConfig:
     """ Default configurations for the Protean-Flask application """
 

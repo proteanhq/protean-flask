@@ -57,6 +57,9 @@ class EntitySerializer(BaseSerializer):
         # Lookup the field mapping in the dictionary, default to String field
         e_field_type = type(field_obj)
         if e_field_type in self.field_mapping:
+            field_opts = {}
+            if e_field_type == field.List:
+                field_opts['cls_or_instance'] = ma.fields.String
             return self.field_mapping[e_field_type]()
         else:
             return ma.fields.String
