@@ -26,7 +26,6 @@ class EntitySerializer(BaseSerializer):
     OPTIONS_CLASS = EntitySerializerOpts
 
     field_mapping = {
-        field.Auto: ma.fields.String,
         field.String: ma.fields.String,
         field.Boolean: ma.fields.Boolean,
         field.Integer: ma.fields.Integer,
@@ -61,5 +60,8 @@ class EntitySerializer(BaseSerializer):
             if e_field_type == field.List:
                 field_opts['cls_or_instance'] = ma.fields.String
             return self.field_mapping[e_field_type](**field_opts)
+        elif e_field_type == field.Auto:
+            raise ConfigurationError(
+                'Fields of type `Auto` must be manually set in the serializer.')
         else:
             return ma.fields.String()
