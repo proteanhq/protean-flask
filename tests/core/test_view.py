@@ -137,3 +137,7 @@ def test_flask_view():
 
     rv = client.get('/flask-view/abc')
     assert rv.status_code == 404
+
+
+def test_exception():
+    """ Test handling of exceptions by the app """

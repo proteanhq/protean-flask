@@ -248,8 +248,8 @@ class ListAPIResource(GenericAPIResource):
         """List the entities.
         """
         return self._process_request(
-            self.usecase_cls, self.request_object_cls, payload=request.payload,
-            many=True)
+            self.usecase_cls, self.request_object_cls,
+            payload=request.payload, many=True)
 
 
 class CreateAPIResource(GenericAPIResource):

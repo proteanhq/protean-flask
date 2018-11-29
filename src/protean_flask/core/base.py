@@ -31,6 +31,7 @@ class Protean(object):
     def __init__(self, app_or_bp=None):
         self.app = None
         self.blueprint = None
+        self.exception_handler = None
         self.viewsets = []
 
         if app_or_bp is not None:
@@ -53,6 +54,7 @@ class Protean(object):
         # Register error handlers for the app
         app.register_error_handler(
             UsecaseExecutionError, self._handle_exception)
+        self.exception_handler = perform_import(active_config.EXCEPTION_HANDLER)
 
         # Update the current configuration
         app.config.from_object(active_config)
@@ -93,13 +95,12 @@ class Protean(object):
         if request.url_rule:
             view_func = current_app.view_functions[request.url_rule.endpoint]
             view_class = view_func.view_class
-            if isinstance(view_func, APIResource):
-                renderer = view_class.get_renderer()
+            if issubclass(view_class, APIResource):
+                renderer = getattr(view_class, 'renderer', renderer)
 
         # If user has defined an exception handler then call that
-        exception_handler = perform_import(active_config.EXCEPTION_HANDLER)
-        if exception_handler:
-            code, data, headers = exception_handler(e)
+        if self.exception_handler:
+            code, data, headers = self.exception_handler(e)
 
         else:
             code = e.value[0].value
