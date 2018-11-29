@@ -62,4 +62,4 @@ class EntitySerializer(BaseSerializer):
                 field_opts['cls_or_instance'] = ma.fields.String
             return self.field_mapping[e_field_type](**field_opts)
         else:
-            return ma.fields.String
+            return ma.fields.String()

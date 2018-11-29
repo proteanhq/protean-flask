@@ -29,15 +29,23 @@ class APIResource(MethodView):
 
     """
 
-    @classmethod
-    def get_renderer(cls):
-        """ Return the renderer to be used for this resource """
-        # If the view does not define a renderer then return the default
-        renderer = getattr(cls, 'renderer', None)
-        if not renderer:
-            renderer = perform_import(active_config.DEFAULT_RENDERER)
+    def _lookup_method(self):
+        """ Lookup the class method to be called for this request"""
+        func = request.url_rule.rule.rsplit('/', 1)[-1]
+        meth = None
+        if func and (func[0] != '<' and func[1] != '>'):
+            meth = getattr(self, func, None)
 
-        return renderer
+        if not meth:
+            meth = getattr(self, request.method.lower(), None)
+
+        # If the request method is HEAD and we don't have a handler for it
+        # retry with GET.
+        if meth is None and request.method == 'HEAD':
+            meth = getattr(self, 'get', None)
+
+        assert meth is not None, 'Unimplemented method %r' % request.method
+        return meth
 
     def parse_payload(self):
         """ Load the data from form, json and query to `request.payload` """
@@ -66,33 +74,18 @@ class APIResource(MethodView):
             parser = perform_import(parser)
             parser()
 
-    def dispatch_request(self, *args, **kwargs):
-        """Dispatch the request to the correct function"""
+    def render_response(self, response):
+        """ Render the response to the expected format """
 
-        # Lookup custom method defined for this resource
-        func = request.url_rule.rule.rsplit('/', 1)[-1]
-        meth = None
-        if func and (func[0] != '<' and func[1] != '>'):
-            meth = getattr(self, func, None)
+        # Get the renderer to be used for this view
+        renderer = getattr(self, 'renderer', None)
+        if not renderer:
+            renderer = perform_import(active_config.DEFAULT_RENDERER)
 
-        if not meth:
-            meth = getattr(self, request.method.lower(), None)
-
-        # If the request method is HEAD and we don't have a handler for it
-        # retry with GET.
-        if meth is None and request.method == 'HEAD':
-            meth = getattr(self, 'get', None)
-
-        assert meth is not None, 'Unimplemented method %r' % request.method
-
-        # Parse the request input and populate the payload
-        self.parse_payload()
-
-        # Call the method and create the response
-        response = meth(*args, **kwargs)
+        # Perform rendering only for non Flask Responses
         if not isinstance(response, current_app.response_class):
             data, code, headers = self._unpack_response(response)
-            response = self.get_renderer()(data, code, headers)
+            response = renderer(data, code, headers)
 
         return response
 
@@ -115,6 +108,20 @@ class APIResource(MethodView):
             pass
 
         return value, 200, {}
+
+    def dispatch_request(self, *args, **kwargs):
+        """Dispatch the request to the correct function"""
+
+        # Lookup method defined for this resource
+        meth = self._lookup_method()
+
+        # Parse the request input and populate the payload
+        self.parse_payload()
+
+        # Call the method and create the response
+        response = meth(*args, **kwargs)
+        final_response = self.render_response(response)
+        return final_response
 
 
 class GenericAPIResource(APIResource):
