@@ -1,11 +1,15 @@
 """Module that defines entry point to the Protean Flask Application"""
+import hashlib
+
 from flask import Request, request, current_app, Blueprint
 
 from protean.core.exceptions import UsecaseExecutionError
 from protean.utils.importlib import perform_import
 from protean.conf import active_config
+from protean.context import context
 
 from .views import APIResource
+from ..utils import derive_tenant
 
 
 class ProteanRequest(Request):
@@ -51,6 +55,10 @@ class Protean(object):
         # Update the request class for the app
         app.request_class = ProteanRequest
 
+        # Manage the context information before/after request
+        app.before_request(self._load_protean_context)
+        app.after_request(self._cleanup_protean_context)
+
         # Register error handlers for the app
         app.register_error_handler(
             UsecaseExecutionError, self._handle_exception)
@@ -86,6 +94,29 @@ class Protean(object):
         self.app.add_url_rule('%s<%s:%s>' % (url, pk_type, pk_name),
                               view_func=view_func,
                               methods=['GET', 'PUT', 'DELETE'])
+
+    @staticmethod
+    def _load_protean_context():
+        """ Load the protean context with details from the request"""
+
+        user_agent = request.headers.get('User-Agent', '')
+        hashed_user_agent = hashlib.sha256(user_agent.encode())
+
+        details = {
+            'host_url': request.host_url,
+            'url': request.url,
+            'tenant_id': derive_tenant(request.url),
+            'user_agent': user_agent,
+            'user_agent_hash': hashed_user_agent.hexdigest(),
+            'remote_addr': request.remote_addr
+        }
+        context.set_context(details)
+
+    @staticmethod
+    def _cleanup_protean_context(response):
+        """ Cleanup the context on end of request"""
+        context.cleanup()
+        return response
 
     def _handle_exception(self, e):
         """ Handle Protean exceptions and return appropriate response """

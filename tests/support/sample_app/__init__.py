@@ -3,7 +3,8 @@ from flask import Flask
 
 from protean_flask import Protean
 from .views import ShowDogResource, CreateDogResource, UpdateDogResource, \
-    DeleteDogResource, ListDogResource, flask_view, HumanResourceSet
+    DeleteDogResource, ListDogResource, HumanResourceSet, CurrentContextResource,\
+    flask_view
 from .blueprint import blueprint
 
 app = Flask(__name__)
@@ -26,6 +27,9 @@ app.add_url_rule('/dogs/<int:identifier>',
                  methods=['DELETE'])
 app.add_url_rule('/flask-view', view_func=flask_view,
                  methods=['GET'])
+app.add_url_rule('/current-context', methods=['GET'],
+                 view_func=CurrentContextResource.as_view('current_context'))\
+
 api.register_viewset(HumanResourceSet, 'humans', '/humans', pk_type='int',
                      additional_routes=['/<int:identifier>/my_dogs'])
 
