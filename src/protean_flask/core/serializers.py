@@ -17,7 +17,7 @@ class EntitySerializerOpts(ma.schema.SchemaOpts):
     """ Options for the entity serializer"""
     def __init__(self, meta):
         super().__init__(meta)
-        self.entity = getattr(meta, 'entity', None)
+        self.entity_cls = getattr(meta, 'entity', None)
 
 
 class EntitySerializer(BaseSerializer):
@@ -38,13 +38,14 @@ class EntitySerializer(BaseSerializer):
         super().__init__(*args, **kwargs)
 
         # Updates the declared fields with the fields of the Entity class
-        if not self.opts.entity or not issubclass(self.opts.entity, Entity):
+        if not self.opts.entity_cls or not \
+                issubclass(self.opts.entity_cls, Entity):
             raise ConfigurationError(
-                '`Meta.entity` option must be set and be a subclass of `Entity`.')
+                '`Meta.entity` option must be set and a subclass of `Entity`.')
 
         entity_fields = OrderedDict()
         for field_name, field_obj in \
-                self.opts.entity.meta_.declared_fields.items():
+                self.opts.entity_cls.meta_.declared_fields.items():
             if field_name not in self.declared_fields:
                 entity_fields[field_name] = self.build_field(field_obj)
 
