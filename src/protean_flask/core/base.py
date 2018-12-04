@@ -3,6 +3,7 @@ import hashlib
 
 from flask import Request, request, current_app, Blueprint
 
+from protean.core.repository import repo
 from protean.core.exceptions import UsecaseExecutionError
 from protean.utils.importlib import perform_import
 from protean.conf import active_config
@@ -55,9 +56,9 @@ class Protean(object):
         # Update the request class for the app
         app.request_class = ProteanRequest
 
-        # Manage the context information before/after request
-        app.before_request(self._load_protean_context)
-        app.after_request(self._cleanup_protean_context)
+        # Manage the protean information before/after request
+        app.before_request(self._load_protean)
+        app.after_request(self._cleanup_protean)
 
         # Register error handlers for the app
         app.register_error_handler(
@@ -96,7 +97,7 @@ class Protean(object):
                               methods=['GET', 'PUT', 'DELETE'])
 
     @staticmethod
-    def _load_protean_context():
+    def _load_protean():
         """ Load the protean context with details from the request"""
 
         user_agent = request.headers.get('User-Agent', '')
@@ -113,9 +114,10 @@ class Protean(object):
         context.set_context(details)
 
     @staticmethod
-    def _cleanup_protean_context(response):
-        """ Cleanup the context on end of request"""
+    def _cleanup_protean(response):
+        """ Cleanup the context and connections on end of request"""
         context.cleanup()
+        repo.close_connections()
         return response
 
     def _handle_exception(self, e):

@@ -63,7 +63,8 @@ class APIResource(MethodView):
                 request.payload.update(
                     immutable_dict_2_dict(request.files))
             elif mime_type == 'application/json':
-                request.payload = request.get_json(force=True)
+                request.payload = request.get_json(
+                    force=True, silent=True) or {}
 
         elif request.method == 'GET':
             request.payload = immutable_dict_2_dict(request.args)
