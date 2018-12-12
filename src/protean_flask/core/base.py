@@ -76,25 +76,35 @@ class Protean(object):
             `additional_routes` argument. Note that the route names have to be
             the same as method names
         """
-        view_func = view.as_view(endpoint)
-
         # add the custom routes to the app
         if additional_routes is None:
             additional_routes = list()
         for route in additional_routes:
+            route_name = endpoint
+            if isinstance(route, (list, tuple)):
+                route, route_name = route
             self.app.add_url_rule(
-                '{}{}'.format(url, route), view_func=view_func)
+                '{}{}'.format(url, route), view_func=view.as_view(route_name))
 
         # Standard routes
-        self.app.add_url_rule(url, defaults={pk_name: None},
-                              view_func=view_func, methods=['GET', ])
-        self.app.add_url_rule(url, view_func=view_func, methods=['POST', ])
+        self.app.add_url_rule(
+            url, view_func=view.as_view(f'list_{endpoint}'),
+            methods=['GET', ])
+        self.app.add_url_rule(
+            url, view_func=view.as_view(f'create_{endpoint}'),
+            methods=['POST', ])
 
         # Make sure that the url ends with a
         url = f'{url}/' if not url.endswith('/') else url
         self.app.add_url_rule('%s<%s:%s>' % (url, pk_type, pk_name),
-                              view_func=view_func,
-                              methods=['GET', 'PUT', 'DELETE'])
+                              view_func=view.as_view(f'show_{endpoint}'),
+                              methods=['GET'])
+        self.app.add_url_rule('%s<%s:%s>' % (url, pk_type, pk_name),
+                              view_func=view.as_view(f'update_{endpoint}'),
+                              methods=['PUT'])
+        self.app.add_url_rule('%s<%s:%s>' % (url, pk_type, pk_name),
+                              view_func=view.as_view(f'delete_{endpoint}'),
+                              methods=['DELETE'])
 
     @staticmethod
     def _load_protean():
