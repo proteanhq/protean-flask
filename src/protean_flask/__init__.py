@@ -3,7 +3,7 @@ from protean.conf import active_config
 from . import config
 from .core.base import Protean
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 __all__ = ('Protean',)
 
