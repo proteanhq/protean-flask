@@ -1,14 +1,13 @@
 """Module to test request data parsing functionality"""
 import json
-
 from io import BytesIO
 
+from flask import jsonify
+from flask import request
+from tests.support.sample_app import app
 from werkzeug.datastructures import FileStorage
-from flask import request, jsonify
 
 from protean_flask.core.views import APIResource
-
-from tests.support.sample_app import app
 
 
 class DummyView(APIResource):

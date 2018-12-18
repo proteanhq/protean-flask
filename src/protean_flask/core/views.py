@@ -1,22 +1,25 @@
 """This module exposes the Base Resource View for all Application Views"""
 
 import inflect
-
-from werkzeug.wrappers import parse_options_header
-
-from flask import request, current_app
+from flask import current_app
+from flask import request
 from flask.views import MethodView
-
-from protean.core.usecase import (ShowRequestObject, ShowUseCase,
-                                  ListRequestObject, ListUseCase,
-                                  CreateRequestObject, CreateUseCase,
-                                  UpdateRequestObject, UpdateUseCase,
-                                  DeleteRequestObject, DeleteUseCase)
-from protean.core.tasklet import Tasklet
-from protean.core.repository import repo
-from protean.utils.importlib import perform_import
-from protean.utils import inflection
 from protean.conf import active_config
+from protean.core.repository import repo
+from protean.core.tasklet import Tasklet
+from protean.core.usecase import CreateRequestObject
+from protean.core.usecase import CreateUseCase
+from protean.core.usecase import DeleteRequestObject
+from protean.core.usecase import DeleteUseCase
+from protean.core.usecase import ListRequestObject
+from protean.core.usecase import ListUseCase
+from protean.core.usecase import ShowRequestObject
+from protean.core.usecase import ShowUseCase
+from protean.core.usecase import UpdateRequestObject
+from protean.core.usecase import UpdateUseCase
+from protean.utils import inflection
+from protean.utils.importlib import perform_import
+from werkzeug.wrappers import parse_options_header
 
 from protean_flask.utils import immutable_dict_2_dict
 

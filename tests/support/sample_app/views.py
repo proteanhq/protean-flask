@@ -1,15 +1,20 @@
 """ Views of the sample app"""
 from protean.context import context
 
-from protean_flask.core.views import (ShowAPIResource, ListAPIResource,
-                                      CreateAPIResource, UpdateAPIResource,
-                                      DeleteAPIResource, APIResource)
+from protean_flask.core.views import APIResource
+from protean_flask.core.views import CreateAPIResource
+from protean_flask.core.views import DeleteAPIResource
+from protean_flask.core.views import ListAPIResource
+from protean_flask.core.views import ShowAPIResource
+from protean_flask.core.views import UpdateAPIResource
 from protean_flask.core.viewsets import GenericAPIResourceSet
 
-
-from .serializers import DogSerializer, HumanSerializer
-from .schemas import DogSchema, HumanSchema
-from .usecases import ListMyDogsUsecase, ListMyDogsRequestObject
+from .schemas import DogSchema
+from .schemas import HumanSchema
+from .serializers import DogSerializer
+from .serializers import HumanSerializer
+from .usecases import ListMyDogsRequestObject
+from .usecases import ListMyDogsUsecase
 
 
 class ShowDogResource(ShowAPIResource):

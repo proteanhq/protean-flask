@@ -5,7 +5,6 @@ import os
 import mock
 import pytest
 
-
 os.environ['PROTEAN_CONFIG'] = 'tests.support.sample_config'
 
 

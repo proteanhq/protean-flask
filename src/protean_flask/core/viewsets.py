@@ -1,13 +1,17 @@
 """This module exposes a generic Viewset class"""
 from flask import request
+from protean.core.usecase import CreateRequestObject
+from protean.core.usecase import CreateUseCase
+from protean.core.usecase import DeleteRequestObject
+from protean.core.usecase import DeleteUseCase
+from protean.core.usecase import ListRequestObject
+from protean.core.usecase import ListUseCase
+from protean.core.usecase import ShowRequestObject
+from protean.core.usecase import ShowUseCase
+from protean.core.usecase import UpdateRequestObject
+from protean.core.usecase import UpdateUseCase
 
-from protean.core.usecase import (ShowRequestObject, ShowUseCase,
-                                  ListRequestObject, ListUseCase,
-                                  CreateRequestObject, CreateUseCase,
-                                  UpdateRequestObject, UpdateUseCase,
-                                  DeleteRequestObject, DeleteUseCase)
-
-from protean_flask.core.views import GenericAPIResource, INFLECTOR
+from protean_flask.core.views import GenericAPIResource
 
 
 class GenericAPIResourceSet(GenericAPIResource):
@@ -63,4 +67,3 @@ class GenericAPIResourceSet(GenericAPIResource):
         payload = {'identifier': identifier}
         return self._process_request(
             self.delete_usecase, self.delete_request_object, payload=payload)
-
