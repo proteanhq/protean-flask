@@ -28,7 +28,7 @@ def read(*names, **kwargs):
 
 setup(
     name='protean-flask',
-    version='0.0.2',
+    version='0.0.5',
     license='BSD 3-Clause License',
     description='Protean Flask Extension',
     long_description='%s\n%s' % (
