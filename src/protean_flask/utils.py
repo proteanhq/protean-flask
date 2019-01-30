@@ -35,4 +35,3 @@ def derive_tenant(url):
     host = urlparse(url).hostname
 
     return host
-

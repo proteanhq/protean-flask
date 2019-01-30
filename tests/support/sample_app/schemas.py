@@ -2,7 +2,8 @@
 from protean.core.repository import repo
 from protean.impl.repository.dict_repo import DictSchema
 
-from .entities import Dog, Human
+from .entities import Dog
+from .entities import Human
 
 
 class DogSchema(DictSchema):

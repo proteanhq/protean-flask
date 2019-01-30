@@ -1,9 +1,13 @@
 """ Usecases of the sample application """
-from protean.core.usecase import ListUseCase, ListRequestObject, UseCase, \
-    ShowRequestObject
-from protean.core.tasklet import Tasklet
 
-from .schemas import DogSchema, repo
+from protean.core.tasklet import Tasklet
+from protean.core.usecase import ListRequestObject
+from protean.core.usecase import ListUseCase
+from protean.core.usecase import ShowRequestObject
+from protean.core.usecase import UseCase
+
+from .schemas import DogSchema
+from .schemas import repo
 
 
 class ListMyDogsRequestObject(ShowRequestObject):

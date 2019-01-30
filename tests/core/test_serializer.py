@@ -1,13 +1,10 @@
 """Module to test Serializer functionality"""
 
-import pytest
-
 import marshmallow as ma
-
+import pytest
 from protean.core.exceptions import ConfigurationError
 
 from protean_flask.core.serializers import EntitySerializer
-
 
 from ..support.sample_app.entities import Dog
 

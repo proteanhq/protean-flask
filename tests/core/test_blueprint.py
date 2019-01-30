@@ -1,6 +1,6 @@
 """Module to test View functionality and features"""
-from protean.core.repository import repo
 
+from protean.core.repository import repo
 from tests.support.sample_app import app
 
 
@@ -71,5 +71,4 @@ class TestBlueprint:
         rv = self.client.get('/humans/1/my_dogs')
         assert rv.status_code == 200
         assert rv.json['total'] == 1
-        assert rv.json['dogs'][0] == \
-               {'age': 5, 'id': 5, 'name': 'Johnny', 'owner': 'John'}
+        assert rv.json['dogs'][0] == {'age': 5, 'id': 5, 'name': 'Johnny', 'owner': 'John'}

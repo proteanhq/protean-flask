@@ -2,7 +2,6 @@
 import json
 
 from protean.core.repository import repo
-
 from tests.support.sample_app import app
 
 
@@ -42,8 +41,7 @@ class TestGenericAPIResourceSet:
         rv = self.client.get('/humans?order_by[]=id')
         assert rv.status_code == 200
         assert rv.json['total'] == 2
-        assert rv.json['humans'][0] == \
-               {'id': 2, 'name': 'Jane', 'contact': None}
+        assert rv.json['humans'][0] == {'id': 2, 'name': 'Jane', 'contact': None}
 
     def test_set_create(self):
         """ Test creating an entity using the resource set """
@@ -104,5 +102,4 @@ class TestGenericAPIResourceSet:
         rv = self.client.get('/humans/1/my_dogs')
         assert rv.status_code == 200
         assert rv.json['total'] == 3
-        assert rv.json['dogs'][0] == \
-               {'age': 2, 'id': 4, 'name': 'Brawny', 'owner': 'John'}
+        assert rv.json['dogs'][0] == {'age': 2, 'id': 4, 'name': 'Brawny', 'owner': 'John'}

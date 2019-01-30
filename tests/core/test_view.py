@@ -1,11 +1,10 @@
 """Module to test View functionality and features"""
 
 import json
-import pytest
 
+import pytest
 from protean.core.exceptions import ObjectNotFoundError
 from protean.core.repository import repo
-
 from tests.support.sample_app import app
 
 
@@ -53,8 +52,7 @@ class TestGenericAPIResource:
         rv = self.client.get('/dogs?order_by[]=age')
         assert rv.status_code == 200
         assert rv.json['total'] == 4
-        assert rv.json['dogs'][0] == \
-               {'age': 2, 'id': 4, 'name': 'Brawny', 'owner': 'John'}
+        assert rv.json['dogs'][0] == {'age': 2, 'id': 4, 'name': 'Brawny', 'owner': 'John'}
 
         # Test with filters
         rv = self.client.get('/dogs?owner=Jane')
