@@ -118,7 +118,6 @@ class TestGenericAPIResource:
         # Delete the dog object
         rv = self.client.delete('/dogs/5')
         assert rv.status_code == 204
-        # print(dir(rv))
         assert rv.data == b''
 
         # Test value has been updated in the db

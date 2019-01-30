@@ -4,7 +4,7 @@ import inflect
 
 from werkzeug.wrappers import parse_options_header
 
-from flask import request, current_app
+from flask import request, current_app, Response
 from flask.views import MethodView
 
 from protean.core.usecase import (ShowRequestObject, ShowUseCase,
@@ -14,6 +14,7 @@ from protean.core.usecase import (ShowRequestObject, ShowUseCase,
                                   DeleteRequestObject, DeleteUseCase)
 from protean.core.tasklet import Tasklet
 from protean.core.repository import repo
+from protean.core.transport import Status
 from protean.utils.importlib import perform_import
 from protean.utils import inflection
 from protean.conf import active_config
@@ -207,6 +208,10 @@ class GenericAPIResource(APIResource):
         # If no serialization is set just return the response object
         if no_serialization:
             return response_object.value
+
+        # Return empty response for 204
+        if response_object.code == Status.SUCCESS_WITH_NO_CONTENT:
+            return Response(None, response_object.code.value)
 
         # Serialize the results and return the response
         if many:
