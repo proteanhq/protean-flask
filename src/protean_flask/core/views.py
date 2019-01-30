@@ -3,9 +3,11 @@
 import inflect
 from flask import current_app
 from flask import request
+from flask import Response
 from flask.views import MethodView
 from protean.conf import active_config
 from protean.core.repository import repo
+from protean.core.transport import Status
 from protean.core.tasklet import Tasklet
 from protean.core.usecase import CreateRequestObject
 from protean.core.usecase import CreateUseCase
@@ -210,6 +212,10 @@ class GenericAPIResource(APIResource):
         # If no serialization is set just return the response object
         if no_serialization:
             return response_object.value
+
+        # Return empty response for 204s
+        if response_object.code == Status.SUCCESS_WITH_NO_CONTENT:
+            return Response(None, response_object.code.value)
 
         # Serialize the results and return the response
         if many:
