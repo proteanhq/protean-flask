@@ -1,6 +1,7 @@
 """ Entities used by the sample application """
 
 from protean.core import field
+from protean.core.field import association
 from protean.core.entity import Entity
 
 
@@ -17,3 +18,12 @@ class Human(Entity):
     id = field.Integer(identifier=True)
     name = field.String(required=True, max_length=50)
     contact = field.StringMedium()
+    dogs = association.HasMany('RelatedDog', via='owner_id')
+
+
+class RelatedDog(Entity):
+    """ This is a dummy Dog with related field"""
+    id = field.Integer(identifier=True)
+    name = field.String(required=True, max_length=50)
+    age = field.Integer(default=5)
+    owner = field.Reference(Human)

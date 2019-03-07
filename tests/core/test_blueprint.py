@@ -43,6 +43,10 @@ class TestBlueprint:
         rv = self.client.get('/blueprint/dogs/6')
         assert rv.status_code == 404
 
+        # Delete the dog now
+        dog = Dog.get(5)
+        dog.delete()
+
     def test_set_show(self):
         """ Test retrieving an entity using the blueprint resource set"""
         # Create a human object
@@ -65,7 +69,7 @@ class TestBlueprint:
 
         # Create a human object
         Human.create(id=1, name='John')
-        Human.create(id=5, name='Johnny', owner='John')
+        Dog.create(id=5, name='Johnny', owner='John')
 
         # Get the custom route
         rv = self.client.get('/humans/1/my_dogs')

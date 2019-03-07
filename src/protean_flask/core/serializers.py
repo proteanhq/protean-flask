@@ -49,6 +49,8 @@ class EntitySerializer(BaseSerializer):
                 continue
             elif self.opts.exclude and field_name in self.opts.exclude:
                 continue
+            elif isinstance(field_obj, field.Reference):
+                continue
             elif field_name not in self.declared_fields:
                 entity_fields[field_name] = self.build_field(field_obj)
 
