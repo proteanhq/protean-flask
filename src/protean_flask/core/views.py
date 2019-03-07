@@ -6,7 +6,6 @@ from flask import request
 from flask import Response
 from flask.views import MethodView
 from protean.conf import active_config
-from protean.core.repository import repo
 from protean.core.transport import Status
 from protean.core.tasklet import Tasklet
 from protean.core.usecase import CreateRequestObject
@@ -134,29 +133,21 @@ class GenericAPIResource(APIResource):
     """This is the Generic Base Class for all Views
     """
 
-    schema_cls = None
+    entity_cls = None
     serializer_cls = None
-    repo = None
 
-    def get_repository_factory(self):
-        """ Returns the repository factory to be used
-        Uses the attribute `self.repo_factory` or
-        defaults to using `protean.repository.rf`.
-        """
-        return self.repo or repo
-
-    def get_schema_cls(self):
+    def get_entity_cls(self):
         """
         Return the class to use for the serializer.
         Defaults to using `self.schema_cls`.
         """
-        if not self.schema_cls:
+        if not self.entity_cls:
             raise AssertionError(
-                "'%s' should either include a `schema_cls` attribute, "
-                "or override the `get_schema_cls()` method."
+                "'%s' should either include a `entity_cls` attribute, "
+                "or override the `get_entity_cls()` method."
                 % self.__class__.__name__
             )
-        return self.schema_cls
+        return self.entity_cls
 
     def get_serializer(self, *args, **kwargs):
         """
@@ -193,20 +184,17 @@ class GenericAPIResource(APIResource):
                          many=False, no_serialization=False):
         """ Process the request by running the Protean Tasklet """
         # Get the schema class and derive resource name
-        schema_cls = self.get_schema_cls()
-        resource = inflection.underscore(schema_cls.opts_.entity_cls.__name__)
+        entity_cls = self.get_entity_cls()
+        resource = inflection.underscore(entity_cls.__name__)
 
         # Get the serializer for this class
         serializer = None
         if not no_serialization:
             serializer = self.get_serializer(many=many)
 
-        # Get the repository factory to be used
-        rf = self.get_repository_factory()
-
         # Run the use case and return the results
         response_object = Tasklet.perform(
-            rf, schema_cls, usecase_cls, request_object_cls, payload,
+            entity_cls, usecase_cls, request_object_cls, payload,
             raise_error=True)
 
         # If no serialization is set just return the response object
