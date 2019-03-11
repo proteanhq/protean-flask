@@ -1,13 +1,13 @@
 """This module exposes the Base Resource View for all Application Views"""
 
 import inflect
+from flask import Response
 from flask import current_app
 from flask import request
-from flask import Response
 from flask.views import MethodView
 from protean.conf import active_config
-from protean.core.transport import Status
 from protean.core.tasklet import Tasklet
+from protean.core.transport import Status
 from protean.core.usecase import CreateRequestObject
 from protean.core.usecase import CreateUseCase
 from protean.core.usecase import DeleteRequestObject

@@ -9,7 +9,8 @@ from protean_flask.core.views import ShowAPIResource
 from protean_flask.core.views import UpdateAPIResource
 from protean_flask.core.viewsets import GenericAPIResourceSet
 
-from .entities import Dog, Human
+from .entities import Dog
+from .entities import Human
 from .serializers import DogSerializer
 from .serializers import HumanSerializer
 from .usecases import ListMyDogsRequestObject

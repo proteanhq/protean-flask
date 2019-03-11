@@ -3,10 +3,8 @@
 import json
 
 import pytest
-
-from protean.core.repository import repo_factory
 from protean.core.exceptions import ObjectNotFoundError
-
+from protean.core.repository import repo_factory
 from tests.support.sample_app import app
 from tests.support.sample_app.entities import Dog
 

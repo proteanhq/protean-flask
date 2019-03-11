@@ -2,9 +2,9 @@
 import json
 
 from protean.core.repository import repo_factory
-
 from tests.support.sample_app import app
-from tests.support.sample_app.entities import Human, Dog
+from tests.support.sample_app.entities import Dog
+from tests.support.sample_app.entities import Human
 
 
 class TestGenericAPIResourceSet:

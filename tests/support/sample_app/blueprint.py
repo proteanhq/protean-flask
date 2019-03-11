@@ -5,7 +5,8 @@ from protean_flask import Protean
 from protean_flask.core.views import ShowAPIResource
 from protean_flask.core.viewsets import GenericAPIResourceSet
 
-from .schemas import Dog, Human
+from .schemas import Dog
+from .schemas import Human
 from .serializers import DogSerializer
 from .serializers import HumanSerializer
 from .usecases import ListMyDogsRequestObject

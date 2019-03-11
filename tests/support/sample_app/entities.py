@@ -1,8 +1,8 @@
 """ Entities used by the sample application """
 
 from protean.core import field
-from protean.core.field import association
 from protean.core.entity import Entity
+from protean.core.field import association
 
 
 class Dog(Entity):
