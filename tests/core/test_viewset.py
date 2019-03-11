@@ -1,8 +1,10 @@
 """Module to test Viewset functionality and features"""
 import json
 
-from protean.core.repository import repo
+from protean.core.repository import repo_factory
 from tests.support.sample_app import app
+from tests.support.sample_app.entities import Dog
+from tests.support.sample_app.entities import Human
 
 
 class TestGenericAPIResourceSet:
@@ -15,10 +17,17 @@ class TestGenericAPIResourceSet:
         # Create the test client
         cls.client = app.test_client()
 
+    @classmethod
+    def teardown_class(cls):
+        """ Teardown for this test case"""
+
+        # Delete all dog objects
+        repo_factory.Human.delete_all()
+
     def test_set_show(self):
         """ Test retrieving an entity using the resource set"""
         # Create a human object
-        repo.HumanSchema.create(id=1, name='John')
+        Human.create(id=1, name='John')
 
         # Fetch this human by ID
         rv = self.client.get('/humans/1')
@@ -29,13 +38,14 @@ class TestGenericAPIResourceSet:
         assert rv.json == expected_resp
 
         # Delete the human now
-        repo.HumanSchema.delete(1)
+        human = Human.get(1)
+        human.delete()
 
     def test_set_list(self):
         """ Test listing an entity using the resource set"""
         # Create Human objects
-        repo.HumanSchema.create(id=2, name='Jane')
-        repo.HumanSchema.create(id=3, name='Mary')
+        Human.create(id=2, name='Jane')
+        Human.create(id=3, name='Mary')
 
         # Get the list of humans
         rv = self.client.get('/humans?order_by[]=id')
@@ -59,13 +69,14 @@ class TestGenericAPIResourceSet:
         assert rv.json == expected_resp
 
         # Delete the human now
-        repo.HumanSchema.delete(1)
+        human = Human.get(1)
+        human.delete()
 
     def test_set_update(self):
         """ Test updating an entity using the resource set """
 
         # Create a human object
-        repo.HumanSchema.create(id=1, name='John')
+        Human.create(id=1, name='John')
 
         # Update the human object
         rv = self.client.put('/humans/1',
@@ -79,13 +90,14 @@ class TestGenericAPIResourceSet:
         assert rv.json == expected_resp
 
         # Delete the human now
-        repo.HumanSchema.delete(1)
+        human = Human.get(1)
+        human.delete()
 
     def test_set_delete(self):
         """ Test deleting an entity using the resource set """
 
         # Create a human object
-        repo.HumanSchema.create(id=1, name='John')
+        Human.create(id=1, name='John')
 
         # Delete the dog object
         rv = self.client.delete('/humans/1')
@@ -96,10 +108,14 @@ class TestGenericAPIResourceSet:
         """ Test custom routes using the resource set """
 
         # Create a human object
-        repo.HumanSchema.create(id=1, name='John')
+        Human.create(id=1, name='John')
+        Dog.create(id=1, name='Johnny', owner='John')
+        Dog.create(id=2, name='Mary', owner='John', age=3)
+        Dog.create(id=3, name='Grady', owner='Jane', age=8)
 
         # Get the custom route
         rv = self.client.get('/humans/1/my_dogs')
         assert rv.status_code == 200
-        assert rv.json['total'] == 3
-        assert rv.json['dogs'][0] == {'age': 2, 'id': 4, 'name': 'Brawny', 'owner': 'John'}
+        assert rv.json['total'] == 2
+        assert rv.json['dogs'][0] == {'age': 3, 'id': 2, 'name': 'Mary',
+                                      'owner': 'John'}

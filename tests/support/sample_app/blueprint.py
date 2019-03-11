@@ -5,8 +5,8 @@ from protean_flask import Protean
 from protean_flask.core.views import ShowAPIResource
 from protean_flask.core.viewsets import GenericAPIResourceSet
 
-from .schemas import DogSchema
-from .schemas import HumanSchema
+from .schemas import Dog
+from .schemas import Human
 from .serializers import DogSerializer
 from .serializers import HumanSerializer
 from .usecases import ListMyDogsRequestObject
@@ -18,13 +18,13 @@ api_bp = Protean(blueprint)
 
 class ShowDogResource(ShowAPIResource):
     """ View for retrieving a Dog by its ID"""
-    schema_cls = DogSchema
+    entity_cls = Dog
     serializer_cls = DogSerializer
 
 
 class HumanResourceSet(GenericAPIResourceSet):
     """ Resource Set for the Human Entity"""
-    schema_cls = HumanSchema
+    entity_cls = Human
     serializer_cls = HumanSerializer
 
     def my_dogs(self, identifier):

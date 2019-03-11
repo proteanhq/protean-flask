@@ -1,11 +1,13 @@
 language: python
+dist: xenial
 python:
   - '3.6'
+  - '3.7'
 install:
   - pip install -r requirements/test.txt
   - python setup.py install
 script:
-  - pytest --cov=protean_flask --cov-config .coveragerc tests
+  - pytest --cov=protean_flask --cov-config .coveragerc --flake8
 after_success:
   - pip install codecov
   - codecov

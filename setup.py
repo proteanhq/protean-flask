@@ -28,7 +28,7 @@ def read(*names, **kwargs):
 
 setup(
     name='protean-flask',
-    version='0.0.6',
+    version='0.0.9',
     license='BSD 3-Clause License',
     description='Protean Flask Extension',
     long_description='%s\n%s' % (
@@ -68,7 +68,7 @@ setup(
         'werkzeug==0.14.1',
         'flask==1.0.2',
         'inflect==1.0.1',
-        'protean==0.0.6',
+        'protean==0.0.9',
         'marshmallow==2.16.1',
         # eg: 'aspectlib==1.1.1', 'six>=1.7',
     ],

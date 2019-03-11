@@ -9,8 +9,8 @@ from protean_flask.core.views import ShowAPIResource
 from protean_flask.core.views import UpdateAPIResource
 from protean_flask.core.viewsets import GenericAPIResourceSet
 
-from .schemas import DogSchema
-from .schemas import HumanSchema
+from .entities import Dog
+from .entities import Human
 from .serializers import DogSerializer
 from .serializers import HumanSerializer
 from .usecases import ListMyDogsRequestObject
@@ -19,37 +19,37 @@ from .usecases import ListMyDogsUsecase
 
 class ShowDogResource(ShowAPIResource):
     """ View for retrieving a Dog by its ID"""
-    schema_cls = DogSchema
+    entity_cls = Dog
     serializer_cls = DogSerializer
 
 
 class ListDogResource(ListAPIResource):
     """ View for listing Dog entities"""
-    schema_cls = DogSchema
+    entity_cls = Dog
     serializer_cls = DogSerializer
 
 
 class CreateDogResource(CreateAPIResource):
     """ View for creating a Dog Entity"""
-    schema_cls = DogSchema
+    entity_cls = Dog
     serializer_cls = DogSerializer
 
 
 class UpdateDogResource(UpdateAPIResource):
     """ View for updating a Dog by its ID"""
-    schema_cls = DogSchema
+    entity_cls = Dog
     serializer_cls = DogSerializer
 
 
 class DeleteDogResource(DeleteAPIResource):
     """ View for deleting a Dog by its ID"""
-    schema_cls = DogSchema
+    entity_cls = Dog
     serializer_cls = DogSerializer
 
 
 class HumanResourceSet(GenericAPIResourceSet):
     """ Resource Set for the Human Entity"""
-    schema_cls = HumanSchema
+    entity_cls = Human
     serializer_cls = HumanSerializer
 
     def my_dogs(self, identifier):
@@ -78,8 +78,6 @@ def flask_view():
 
 class CurrentContextResource(APIResource):
     """ View for retrieving the current context information """
-    schema_cls = DogSchema
-    serializer_cls = DogSerializer
 
     def get(self):
         """ Return the context information on GET """
