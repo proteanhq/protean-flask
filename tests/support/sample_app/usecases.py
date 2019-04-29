@@ -6,8 +6,8 @@ from protean.core.usecase import ListUseCase
 from protean.core.usecase import ShowRequestObject
 from protean.core.usecase import UseCase
 
-from .schemas import Dog
-from .schemas import Human
+from .entities import Dog
+from .entities import Human
 
 
 class ListMyDogsRequestObject(ShowRequestObject):

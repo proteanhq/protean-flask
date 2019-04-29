@@ -1,6 +1,5 @@
 """Module to test View functionality and features"""
 
-from protean.core.repository import repo_factory
 from tests.support.sample_app import app
 from tests.support.sample_app.entities import Dog
 from tests.support.sample_app.entities import Human
@@ -15,14 +14,6 @@ class TestBlueprint:
 
         # Create the test client
         cls.client = app.test_client()
-
-    @classmethod
-    def teardown_class(cls):
-        """ Teardown for this test case"""
-
-        # Delete all dog objects
-        repo_factory.Dog.delete_all()
-        repo_factory.Human.delete_all()
 
     def test_show(self):
         """ Test retrieving an entity using blueprint ShowAPIResource"""

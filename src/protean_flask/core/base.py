@@ -8,7 +8,6 @@ from flask import request
 from protean.conf import active_config
 from protean.context import context
 from protean.core.exceptions import UsecaseExecutionError
-from protean.core.repository import repo_factory
 from protean.utils.importlib import perform_import
 
 from ..utils import derive_tenant
@@ -129,7 +128,7 @@ class Protean(object):
     def _cleanup_protean(response):
         """ Cleanup the context and connections on end of request"""
         context.cleanup()
-        repo_factory.close_connections()
+        # FIXME Close Open Connections
         return response
 
     def _handle_exception(self, e):

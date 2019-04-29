@@ -3,7 +3,6 @@
 import marshmallow as ma
 import pytest
 from protean.core.exceptions import ConfigurationError
-from protean.core.repository import repo_factory
 
 from protean_flask.core.serializers import EntitySerializer
 
@@ -113,13 +112,6 @@ class TestEntitySerializer2:
         """ Setup the test case """
         cls.human = Human.create(id=1, name='John')
 
-    @classmethod
-    def teardown_class(cls):
-        """ Teardown for this test case"""
-
-        # Delete all dog objects
-        repo_factory.Human.delete_all()
-
     def test_reference_field(self):
         """ Test that the reference field gets serialized """
 
@@ -138,6 +130,7 @@ class TestEntitySerializer2:
 
     def test_hasmany_association(self):
         """ Test the has many association gets serialized """
+        RelatedDog.create(id=5, name='Johnny', owner=self.human)
 
         s = HumanDetailSerializer()
         s_result = s.dump(self.human)

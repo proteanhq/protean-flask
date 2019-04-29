@@ -1,7 +1,6 @@
 """Module to test Viewset functionality and features"""
 import json
 
-from protean.core.repository import repo_factory
 from tests.support.sample_app import app
 from tests.support.sample_app.entities import Dog
 from tests.support.sample_app.entities import Human
@@ -16,13 +15,6 @@ class TestGenericAPIResourceSet:
 
         # Create the test client
         cls.client = app.test_client()
-
-    @classmethod
-    def teardown_class(cls):
-        """ Teardown for this test case"""
-
-        # Delete all dog objects
-        repo_factory.Human.delete_all()
 
     def test_set_show(self):
         """ Test retrieving an entity using the resource set"""

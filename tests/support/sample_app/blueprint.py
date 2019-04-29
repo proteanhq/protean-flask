@@ -5,12 +5,12 @@ from protean_flask import Protean
 from protean_flask.core.views import ShowAPIResource
 from protean_flask.core.viewsets import GenericAPIResourceSet
 
-from .schemas import Dog
-from .schemas import Human
-from .serializers import DogSerializer
-from .serializers import HumanSerializer
-from .usecases import ListMyDogsRequestObject
-from .usecases import ListMyDogsUsecase
+from tests.support.sample_app.entities import Dog
+from tests.support.sample_app.entities import Human
+from tests.support.sample_app.serializers import DogSerializer
+from tests.support.sample_app.serializers import HumanSerializer
+from tests.support.sample_app.usecases import ListMyDogsRequestObject
+from tests.support.sample_app.usecases import ListMyDogsUsecase
 
 blueprint = Blueprint('test_blueprint', __name__)
 api_bp = Protean(blueprint)

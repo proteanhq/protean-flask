@@ -4,7 +4,6 @@ import json
 
 import pytest
 from protean.core.exceptions import ObjectNotFoundError
-from protean.core.repository import repo_factory
 from tests.support.sample_app import app
 from tests.support.sample_app.entities import Dog
 
@@ -18,13 +17,6 @@ class TestGenericAPIResource:
 
         # Create the test client
         cls.client = app.test_client()
-
-    @classmethod
-    def teardown_class(cls):
-        """ Teardown for this test case"""
-
-        # Delete all dog objects
-        repo_factory.Dog.delete_all()
 
     def test_show(self):
         """ Test retrieving an entity using ShowAPIResource"""

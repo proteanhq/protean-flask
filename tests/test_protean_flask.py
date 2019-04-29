@@ -27,6 +27,5 @@ def test_protean_context():
         'tenant_id': 'localhost',
         'url': 'http://localhost/current-context',
         'user_agent': 'werkzeug/0.14.1',
-        'user_agent_hash': '11372f4fe6d226c4bb7fbd038c9c11d7d5ee400b847c9'
-                           'fb4f37fe7642b25e182'
+        'user_agent_hash': '11372f4fe6d226c4bb7fbd038c9c11d7d5ee400b847c9fb4f37fe7642b25e182'
     }

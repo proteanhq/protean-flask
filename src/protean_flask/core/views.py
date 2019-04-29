@@ -20,7 +20,7 @@ from protean.core.usecase import UpdateRequestObject
 from protean.core.usecase import UpdateUseCase
 from protean.utils import inflection
 from protean.utils.importlib import perform_import
-from werkzeug.wrappers import parse_options_header
+from werkzeug.http import parse_options_header
 
 from protean_flask.utils import immutable_dict_2_dict
 
@@ -208,10 +208,11 @@ class GenericAPIResource(APIResource):
         # Serialize the results and return the response
         if many:
             items = serializer.dump(response_object.value.items)
+            page = int(response_object.value.offset / response_object.value.limit) + 1
             result = {
                 INFLECTOR.plural(resource): items.data,
                 'total': response_object.value.total,
-                'page': response_object.value.page
+                'page': page
             }
             return result, response_object.code.value
 

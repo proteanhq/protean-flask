@@ -44,7 +44,7 @@ class EntitySerializer(BaseSerializer):
 
         entity_fields = OrderedDict()
         for field_name, field_obj in \
-                self.opts.entity_cls.declared_fields.items():
+                self.opts.entity_cls.meta_.declared_fields.items():
             if self.opts.fields and field_name not in self.opts.fields:
                 continue
             elif self.opts.exclude and field_name in self.opts.exclude:
