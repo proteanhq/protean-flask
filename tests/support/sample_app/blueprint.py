@@ -1,16 +1,15 @@
 """ Blueprints of the sample app"""
 from flask import Blueprint
-
-from protean_flask import Protean
-from protean_flask.core.views import ShowAPIResource
-from protean_flask.core.viewsets import GenericAPIResourceSet
-
 from tests.support.sample_app.entities import Dog
 from tests.support.sample_app.entities import Human
 from tests.support.sample_app.serializers import DogSerializer
 from tests.support.sample_app.serializers import HumanSerializer
 from tests.support.sample_app.usecases import ListMyDogsRequestObject
 from tests.support.sample_app.usecases import ListMyDogsUsecase
+
+from protean_flask import Protean
+from protean_flask.core.views import ShowAPIResource
+from protean_flask.core.viewsets import GenericAPIResourceSet
 
 blueprint = Blueprint('test_blueprint', __name__)
 api_bp = Protean(blueprint)

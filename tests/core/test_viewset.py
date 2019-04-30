@@ -1,7 +1,7 @@
 """Module to test Viewset functionality and features"""
-import pytest
 import json
 
+import pytest
 from tests.support.sample_app import app
 from tests.support.sample_app.entities import Dog
 from tests.support.sample_app.entities import Human
