@@ -53,7 +53,7 @@ setup(
         'Operating System :: POSIX :: Linux',
         'Operating System :: OS/2',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Database',
         'Topic :: Software Development :: Libraries',
@@ -65,19 +65,12 @@ setup(
     ],
     install_requires=[
         'click==7.0',
-        'werkzeug==0.14.1',
+        'werkzeug==0.15.2',
         'flask==1.0.2',
         'inflect==1.0.1',
-        'protean==0.0.9',
+        'protean==0.0.11',
         'marshmallow==2.16.1',
         # eg: 'aspectlib==1.1.1', 'six>=1.7',
-    ],
-    test_requires=[
-        'mock==2.0.0',
-        'pytest==3.6.3',
-        'pytest-cov==2.5.1',
-        'pytest-travis-fold==1.3.0',
-        'pluggy==0.6.0'
     ],
     extras_require={
         # eg:

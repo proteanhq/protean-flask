@@ -4,7 +4,6 @@ import json
 
 import pytest
 from protean.core.exceptions import ObjectNotFoundError
-from protean.core.repository import repo_factory
 from tests.support.sample_app import app
 from tests.support.sample_app.entities import Dog
 
@@ -12,28 +11,19 @@ from tests.support.sample_app.entities import Dog
 class TestGenericAPIResource:
     """Class to test Generic API Resource functionality and methods"""
 
-    @classmethod
-    def setup_class(cls):
-        """ Setup for this test case"""
+    @pytest.fixture(scope="function")
+    def client(self):
+        """ Setup client for test cases """
+        yield app.test_client()
 
-        # Create the test client
-        cls.client = app.test_client()
-
-    @classmethod
-    def teardown_class(cls):
-        """ Teardown for this test case"""
-
-        # Delete all dog objects
-        repo_factory.Dog.delete_all()
-
-    def test_show(self):
+    def test_show(self, client):
         """ Test retrieving an entity using ShowAPIResource"""
 
         # Create a dog object
         Dog.create(id=5, name='Johnny', owner='John')
 
         # Fetch this dog by ID
-        rv = self.client.get('/dogs/5')
+        rv = client.get('/dogs/5')
         assert rv.status_code == 200
 
         expected_resp = {
@@ -42,14 +32,14 @@ class TestGenericAPIResource:
         assert rv.json == expected_resp
 
         # Test search by invalid id
-        rv = self.client.get('/dogs/6')
+        rv = client.get('/dogs/6')
         assert rv.status_code == 404
 
         # Delete the dog now
         dog = Dog.get(5)
         dog.delete()
 
-    def test_list(self):
+    def test_list(self, client):
         """ Test listing an entity using ListAPIResource """
         # Create a dog objects
         Dog.create(id=1, name='Johnny', owner='John')
@@ -58,24 +48,22 @@ class TestGenericAPIResource:
         Dog.create(id=4, name='Brawny', owner='John', age=2)
 
         # Get the list of dogs
-        rv = self.client.get('/dogs?order_by[]=age')
+        rv = client.get('/dogs?order_by[]=age')
         assert rv.status_code == 200
         assert rv.json['total'] == 4
         assert rv.json['dogs'][0] == {'age': 2, 'id': 4, 'name': 'Brawny', 'owner': 'John'}
 
         # Test with filters
-        rv = self.client.get('/dogs?owner=Jane')
+        rv = client.get('/dogs?owner=Jane')
         assert rv.status_code == 200
         assert rv.json['total'] == 1
 
-    def test_create(self):
+    def test_create(self, client):
         """ Test creating an entity using CreateAPIResource """
 
         # Create a dog object
-        rv = self.client.post('/dogs',
-                              data=json.dumps(
-                                  dict(id=5, name='Johnny', owner='John')),
-                              content_type='application/json')
+        rv = client.post('/dogs', data=json.dumps(dict(id=5, name='Johnny', owner='John')),
+                         content_type='application/json')
         assert rv.status_code == 201
 
         expected_resp = {
@@ -92,16 +80,15 @@ class TestGenericAPIResource:
         dog = Dog.get(5)
         dog.delete()
 
-    def test_update(self):
+    def test_update(self, client):
         """ Test updating an entity using UpdateAPIResource """
 
         # Create a dog object
         Dog.create(id=5, name='Johnny', owner='John')
 
         # Update the dog object
-        rv = self.client.put('/dogs/5',
-                             data=json.dumps(dict(age=3)),
-                             content_type='application/json')
+        rv = client.put('/dogs/5', data=json.dumps(dict(age=3)),
+                        content_type='application/json')
         assert rv.status_code == 200
 
         expected_resp = {
@@ -118,14 +105,14 @@ class TestGenericAPIResource:
         dog = Dog.get(5)
         dog.delete()
 
-    def test_delete(self):
+    def test_delete(self, client):
         """ Test deleting an entity using DeleteAPIResource """
 
         # Create a dog object
         Dog.create(id=5, name='Johnny', owner='John')
 
         # Delete the dog object
-        rv = self.client.delete('/dogs/5')
+        rv = client.delete('/dogs/5')
         assert rv.status_code == 204
         assert rv.data == b''
 

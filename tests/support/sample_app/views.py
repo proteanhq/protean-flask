@@ -63,10 +63,11 @@ class HumanResourceSet(GenericAPIResourceSet):
         # Serialize the results and return the response
         serializer = DogSerializer(many=True)
         items = serializer.dump(dogs_list.items)
+        page = int(dogs_list.offset / dogs_list.limit) + 1
         result = {
             'dogs': items.data,
             'total': dogs_list.total,
-            'page': dogs_list.page
+            'page': page
         }
         return result, 200
 
