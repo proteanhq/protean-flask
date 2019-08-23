@@ -65,8 +65,7 @@ setup(
     ],
     install_requires=[
         'click==7.0',
-        'werkzeug==0.15.2',
-        'flask==1.0.2',
+        'flask==1.1.1',
         'inflect==1.0.1',
         'protean==0.0.11',
         'marshmallow==2.16.1',

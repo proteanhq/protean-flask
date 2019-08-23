@@ -26,6 +26,6 @@ def test_protean_context():
         'remote_addr': '127.0.0.1',
         'tenant_id': 'localhost',
         'url': 'http://localhost/current-context',
-        'user_agent': 'werkzeug/0.15.2',
-        'user_agent_hash': 'f40d428dd92918eb5d1c3eaf8c83f8b18ebdbc10aa09d8b0d78deeff9b60f4bb'
+        'user_agent': 'werkzeug/0.15.5',
+        'user_agent_hash': '4065e0471cee81c2f0845a4e59c834bae3351b96c84ddf6b1f8d6f803ec1dba4'
     }
